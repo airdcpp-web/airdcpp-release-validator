@@ -1,4 +1,4 @@
-# airdcpp-release-validator [![Travis][build-badge]][build] [![npm package][npm-badge]][npm]
+# airdcpp-release-validator ![Travis][build-badge]][build] [![npm package][npm-badge]][npm] [![Coverage][coverage-badge]][coverage] [![Code climate][climate-badge]][climate]
 
 AirDC++ extension that performs various validations for release directories.
 
@@ -21,3 +21,6 @@ AirDC++ extension that performs various validations for release directories.
 
 [npm-badge]: https://img.shields.io/npm/v/airdcpp-release-validator.svg?style=flat-square
 [npm]: https://www.npmjs.org/package/airdcpp-release-validator
+
+[coverage-badge]: https://codecov.io/gh/maksis/airdcpp-release-validator/branch/master/graph/badge.svg
+[coverage]: https://codecov.io/gh/maksis/airdcpp-release-validator
