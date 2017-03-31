@@ -1,0 +1,16 @@
+sudo: required
+dist: trusty
+language: node_js
+node_js:
+- stable
+- 4
+before_install:
+# Update to the latest version as peer dependencies may cause issues otherwise
+- npm install npm -g
+script:
+- npm run build
+notifications:
+  email:
+    on_failure: change
+after_success:
+  - bash <(curl -s https://codecov.io/bash)

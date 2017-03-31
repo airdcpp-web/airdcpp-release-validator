@@ -1,0 +1,13 @@
+{
+  "presets": [ "es2015", "stage-1" ],
+  "plugins": [
+    "transform-async-to-generator",
+    "transform-object-assign",
+    "syntax-async-functions",
+    "transform-regenerator",
+    ["transform-runtime", {
+      "polyfill": true,
+      "regenerator": true,
+    }]
+  ]
+}
