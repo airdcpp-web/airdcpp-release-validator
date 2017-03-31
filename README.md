@@ -1,4 +1,4 @@
-# airdcpp-release-validator ![Travis][build-badge]][build] [![npm package][npm-badge]][npm] [![Coverage][coverage-badge]][coverage] [![Code climate][climate-badge]][climate]
+# airdcpp-release-validator [![Travis][build-badge]][build] [![npm package][npm-badge]][npm] [![Coverage][coverage-badge]][coverage] [![Code climate][climate-badge]][climate]
 
 AirDC++ extension that performs various validations for release directories.
 
