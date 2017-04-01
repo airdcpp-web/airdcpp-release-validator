@@ -43,12 +43,12 @@ module.exports = function (socket, extension) {
 		if (text.indexOf('/help') === 0) {
 			return `
 
-	Release scanner commands
+	Release validator commands
 
-	/releasescan
+	/rvalidator scan - Scan the entire share for invalid content
 
 			`;
-		} else if (text.indexOf('/releasescan') === 0) {
+		} else if (text.indexOf('/rvalidator scan') === 0) {
 			runners.scanShare();
 		}
 
@@ -86,7 +86,7 @@ module.exports = function (socket, extension) {
 		await settings.load();
 
 		const subscriberInfo = {
-			id: 'release_validator',
+			id: extension.name,
 			name: 'Release validator',
 		};
 

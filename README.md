@@ -11,9 +11,15 @@ AirDC++ extension that performs various validations for release directories.
 
 - Checks for missing/extra files based on the SFV file content
 
->## Help wanted
+## Development
+
+>### Help wanted
 
 >Pull requests with new validation modules are welcome. When developing new modules, please write tests as well.
+
+This extension is based on the [airdcpp-create-extension](https://github.com/airdcpp-web/airdcpp-create-extension) example project, that provides instructions for AirDC++ extension development.
+
+You may run the tests with `npm run test`.
 
 
 [build-badge]: https://img.shields.io/travis/maksis/airdcpp-release-validator/master.svg?style=flat-square

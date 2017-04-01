@@ -26,7 +26,7 @@
   },
   "devDependencies": {
     "airdcpp-extension": "^0.0.2",
-    "airdcpp-extension-settings": "0.0.1",
+    "airdcpp-extension-settings": "^0.0.2",
     "babel-core": "^6.5.1",
     "babel-loader": "^6.3.2",
     "babel-plugin-transform-object-assign": "^6.5.0",
