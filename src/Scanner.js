@@ -13,7 +13,7 @@ const Scanner = (validators, errorLogger) => {
 		const fullPath = path.join(directoryInfo.path, name);
 		const stat = await fsp.stat(fullPath);
 		if (stat.isFile()) {
-			const extension = path.extname(name);
+			const extension = path.extname(name).toLowerCase();
 			if (extension === '.sfv') {
 				directoryInfo.sfvFiles.push(name);
 			} else if (extension === '.nfo') {

@@ -1,7 +1,7 @@
 {
   "name": "airdcpp-release-validator",
   "version": "0.0.1",
-  "description": "Checks downloaded/shared releases for missing/extra files",
+  "description": "Scan downloaded and shared release directories for missing/extra files",
   "license": "MIT",
   "author": {
     "name": "maksis"
@@ -11,10 +11,10 @@
     "airdcpp-extensions",
     "airdcpp-extensions-public"
   ],
-  "bugs": "https://github.com/airdcpp-web/airdcpp-create-extension/issues/",
+  "bugs": "https://github.com/maksis/airdcpp-release-validator/issues/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/airdcpp-web/airdcpp-create-extension/"
+    "url": "https://github.com/maksis/airdcpp-release-validator"
   },
   "scripts": {
     "build": "npm run clean && cross-env NODE_ENV=production webpack",
