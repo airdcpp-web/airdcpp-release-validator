@@ -1,9 +1,8 @@
-import Promise from 'bluebird';
+import fs from 'async-file';
 import eol from 'eol';
 
 import path from 'path';
 
-const fs = Promise.promisifyAll(require("fs"));
 const crc32Reg = /\s(\w{8})$/;
 
 

@@ -1,5 +1,12 @@
 {
-  "presets": [ "es2015", "stage-1" ],
+  "presets": [
+    "stage-1",
+    ["env", {
+      "targets": {
+        "node": 0.10
+      }
+    }]
+  ],
   "plugins": [
     "transform-async-to-generator",
     "transform-object-assign",

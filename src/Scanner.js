@@ -1,9 +1,8 @@
-import Promise from 'bluebird';
 import path from 'path';
 
 import { TotalErrorCounter, ValidatorErrorReporter } from './ErrorCollector';
 
-const fs = Promise.promisifyAll(require("fs"));
+import fs from 'async-file';
 
 
 // Scanner instance
