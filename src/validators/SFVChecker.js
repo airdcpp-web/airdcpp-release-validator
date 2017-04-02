@@ -22,6 +22,11 @@ const getExtrasReg = (name) => {
 };
  
 const validateCondition = directory => directory.files.length && directory.sfvFiles.length;
+
+const isSfvOrNfo = (name) => {
+	const ext = path.extname(name);
+	return ext === '.nfo' || ext === '.sfv';
+};
  
 const validate = async (directory, reporter) => {
 	// Name comparisons should be case insensitive
@@ -52,7 +57,9 @@ const validate = async (directory, reporter) => {
 	// Matching files are removed so that we can detect extras
 	Object.keys(reader.content).forEach(file => {
 		const fileLower = file.toLowerCase();
-		if (!files[fileLower]) {
+
+		// Some (bad) SFV files also list NFO/SFV files... don't report them
+		if (!files[fileLower] && !isSfvOrNfo(fileLower)) {
 			reporter.addFile(file, 'file_missing', 'File listed in the SFV file does not exist on disk');
 		} else {
 			delete files[fileLower];

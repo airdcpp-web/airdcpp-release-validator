@@ -35,9 +35,11 @@ const ScanRunners = function (socket, extensionName, validatorsGetter) {
 	const scanShare = async () => {
 		const directories = await socket.get('share/grouped_root_paths');
 
+		postEvent('Scanning shared releases...', 'info');
+
 		const scanner = Scanner(validatorsGetter(), errorLogger);
-		
 		await scanner.scanPaths(directories.reduce(reduceGroupedPath, []));
+
 		onShareScanCompleted(scanner);
 		
 		return scanner;
