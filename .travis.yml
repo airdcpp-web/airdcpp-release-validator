@@ -9,6 +9,7 @@ before_install:
 - npm install npm -g
 script:
 - npm run build
+- npm test
 notifications:
   email:
     on_failure: change
