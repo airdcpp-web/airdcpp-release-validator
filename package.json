@@ -36,7 +36,6 @@
     "bluebird": "^3.5.0",
     "cross-env": "^3.2.3",
     "eol": "^0.8.1",
-    "fs-promise": "^2.0.2",
     "jest": "^19.0.2",
     "nodemon": "^1.11.0",
     "rimraf": "^2.5.2",

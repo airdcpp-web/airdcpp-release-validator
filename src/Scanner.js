@@ -1,7 +1,9 @@
-import fsp from 'fs-promise';
+import Promise from 'bluebird';
 import path from 'path';
 
 import { TotalErrorCounter, ValidatorErrorReporter } from './ErrorCollector';
+
+const fs = Promise.promisifyAll(require("fs"));
 
 
 // Scanner instance
@@ -11,7 +13,7 @@ const Scanner = (validators, errorLogger) => {
 	// Add file in content info object
 	const parseFile = async (directoryInfo, name) => {
 		const fullPath = path.join(directoryInfo.path, name);
-		const stat = await fsp.stat(fullPath);
+		const stat = await fs.stat(fullPath);
 		if (stat.isFile()) {
 			const extension = path.extname(name).toLowerCase();
 			if (extension === '.sfv') {
@@ -31,7 +33,7 @@ const Scanner = (validators, errorLogger) => {
 		let contentList;
 
 		try {
-			contentList = await fsp.readdir(directoryPath);
+			contentList = await fs.readdir(directoryPath);
 		} catch (e) {
 			console.error(`Failed to scan the path ${path}: ${e}`);
 			return null;

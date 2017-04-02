@@ -1,8 +1,9 @@
-import fsp from 'fs-promise';
+import Promise from 'bluebird';
 import eol from 'eol';
 
 import path from 'path';
 
+const fs = Promise.promisifyAll(require("fs"));
 const crc32Reg = /\s(\w{8})$/;
 
 
@@ -32,14 +33,14 @@ const SFVReader = (directoryPath) => {
 
 	const load = async (sfvName) => {
 		const filePath = path.join(directoryPath, sfvName);
-		const stat = await fsp.stat(filePath);
+		const stat = await fs.stat(filePath);
 
 		const sizeMb = stat.size / (1.0*1024.0*1024.0);
 		if (sizeMb > 1) {
 			throw new Error(`SFV file is too large (${sizeMb} MiB)`);
 		}
 
-		const file = await fsp.readFile(filePath, 'utf-8');
+		const file = await fs.readFile(filePath, 'utf-8');
 		const loaded = eol.split(file)
 			.filter(filterLines)
 			.reduce(reduceContent, {});

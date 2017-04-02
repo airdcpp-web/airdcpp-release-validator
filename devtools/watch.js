@@ -1,3 +1,5 @@
+'use strict';
+
 const webpack = require('webpack');
 const nodemon = require('nodemon');
 
@@ -8,7 +10,7 @@ const webpackConfig = require('../webpack.config.js');
 
 let started = false;
 
-webpack(webpackConfig).watch(250, function(err, stats) {
+webpack(webpackConfig).watch(1000, function(err, stats) {
 	if (err) {
     console.error(err.stack || err);
     if (err.details) {
