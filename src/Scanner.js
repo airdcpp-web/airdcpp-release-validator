@@ -8,6 +8,7 @@ import fs from 'async-file';
 // Scanner instance
 const Scanner = (validators, errorLogger) => {
 	const errors = TotalErrorCounter();
+	let running = 0, maxRunning = 0, scanned = 0;
 
 	// Add file in content info object
 	const parseFile = async (directoryInfo, name) => {
@@ -62,8 +63,14 @@ const Scanner = (validators, errorLogger) => {
 	};
 
 	const scanPath = async (directoryPath) => {
+		running++;
+		if (running > maxRunning) {
+			maxRunning = running;
+		}
+
 		const content = await parseContent(directoryPath);
 		if (!content) {
+			running--;
 			return;
 		}
 
@@ -71,22 +78,40 @@ const Scanner = (validators, errorLogger) => {
 		const promises = validators.map(runValidator.bind(this, content));
 		await Promise.all(promises);
 
+		running--;
+		scanned++;
+
 		// Scan children
-		await Promise.all(content.folders
-			.map(name => path.join(directoryPath, name))
-			.map(scanPath)
-		);
+		// Use sequential scan to avoid piling up too many tasks 
+		// (and the extension becoming unresponsive)
+		const childPaths = content.folders.map(name => path.join(directoryPath, name));
+		await scanPathsSequential(childPaths);
 	};
 
-	const scanPaths = (paths) => {
-		const promises = paths.map(scanPath);
-		return Promise.all(promises);
+	const scanPathsConcurrent = async (paths) => {
+		await Promise.all(paths.map(scanPath));
+	};
+
+	const scanPathsSequential = async (paths) => {
+		for (let p of paths) {
+			await scanPath(p);
+		}
+	};
+
+	const scanPaths = async (paths) => {
+		await scanPathsConcurrent(paths);
 	};
 
 	return {
 		scanPath,
 		scanPaths,
 		errors,
+		get stats() {
+			return {
+				maxRunning,
+				scanned,
+			};
+		}
 	};
 };
 

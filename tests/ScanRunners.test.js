@@ -4,6 +4,13 @@ import path from 'path';
 import validators from 'validators';
 
 describe('Scan runner', () => {
+	const logger = {
+		verbose: _ => {},
+		info: _ => {},
+		warn: _ => {},
+		error: _ => {},
+	}
+
 	test('should reject failed bundles', async () => {
 		const scanPath = path.join(__dirname, 'data/Test.Release-TEST');
 
@@ -17,6 +24,7 @@ describe('Scan runner', () => {
 
 		const socket = {
 			post: _ => {},
+			logger,
 		};
 
 		const reject = jest.fn();
@@ -40,6 +48,7 @@ describe('Scan runner', () => {
 		const socket = {
 			post: _ => {},
 			get: _ => Promise.resolve(sharePaths),
+			logger,
 		};
 
 		const runner = ScanRunners(socket, 'test-extension', _ => validators);

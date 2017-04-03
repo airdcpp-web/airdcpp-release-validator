@@ -28,6 +28,7 @@ const ScanRunners = function (socket, extensionName, validatorsGetter) {
 			text = 'Scan completed, no problems were found';
 		}
 
+		socket.logger.verbose(`Share scan completed: ${scanner.stats.scanned} paths scanned with maximum concurrency of ${scanner.stats.maxRunning}`);
 		postEvent(text, scanner.errors.count() ? 'warning' : 'info');
 	};
 
