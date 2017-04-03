@@ -7,28 +7,46 @@ export const ValidatorErrorReporter = (directoryInfo, totalErrors, logger) => {
 		return reducedText + (index !== 0 ? ', ' : '') + fileName;
 	};
 
+	// Initialize a new error object or return an existing one
+	const getError = (errorId, message) => {
+		validatorErrors[errorId] = validatorErrors[errorId] || {
+			files: [],
+			hasFolderError: false,
+			message,
+		};
+
+		return validatorErrors[errorId];
+	};
+
+	// Logs the errors after validation has completed
 	const flush = () => {
 		Object.keys(validatorErrors).forEach(id => {
 			const error = validatorErrors[id];
 
-			const fileListing = error.files.reduce(reduceMessage, '');
-			logger(`${directoryInfo.path}${path.sep}: ${error.message} (${error.files.length} file(s): ${fileListing})`);
+			if (error.files.length) {
+				const itemListStr = error.files.reduce(reduceMessage, '');
+				logger(`${directoryInfo.path}: ${error.message} (${error.files.length} file(s): ${itemListStr})`);
+			}
+
+			if (error.hasFolderError) {
+				logger(`${directoryInfo.path}: ${error.message}`);
+			}
 		});
 	};
 
 	const addFile = (fileName, errorId, message) => {
-		validatorErrors[errorId] = validatorErrors[errorId] || {
-			files: [],
-			message,
-		};
+		getError(errorId, message).files.push(fileName);
+		totalErrors.add(errorId, message);
+	};
 
-		validatorErrors[errorId].files.push(fileName);
-
+	const addFolder = (folderPath, errorId, message) => {
+		getError(errorId, message).hasFolderError = true;
 		totalErrors.add(errorId, message);
 	};
 
 	return {
 		addFile,
+		addFolder,
 		flush,
 	};
 };
@@ -39,7 +57,12 @@ export const TotalErrorCounter = () => {
 	// REPORTING
 	const formatErrorCount = (error) => {
 		let message = error.message;
-		message = message.charAt(0).toLowerCase() + message.substr(1);
+
+		// Decapitalize
+		if (message.charAt(1) === message.charAt(1).toLowerCase()) {
+			message = message.charAt(0).toLowerCase() + message.substr(1);
+		}
+
 		return `${message} (count: ${error.count})`
 	};
 

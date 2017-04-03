@@ -84,7 +84,7 @@ const Scanner = (validators, errorLogger) => {
 		// Scan children
 		// Use sequential scan to avoid piling up too many tasks 
 		// (and the extension becoming unresponsive)
-		const childPaths = content.folders.map(name => path.join(directoryPath, name));
+		const childPaths = content.folders.map(name => path.join(directoryPath, name) + path.sep);
 		await scanPathsSequential(childPaths);
 	};
 
