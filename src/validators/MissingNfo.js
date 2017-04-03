@@ -1,12 +1,11 @@
 import fs from 'async-file';
 import path from 'path';
 
+import { isReleaseName } from './common';
+
 
 const subDirReg = /(((DVD|CD|DIS(K|C)).?([0-9](0-9)?))|Sample|Cover(s)?|.{0,5}Sub(s)?)/i;
-const simpleReleaseReg = /^[A-Z0-9]\S{3,}-[A-Za-z0-9_]{2,}$/; // case sensitive
 
-
-const isRelease = name => name.match(simpleReleaseReg);
 
 // Checks if there are NFOs in any of the subdirectories
 const findNfo = (directory) => {
@@ -37,7 +36,7 @@ const validate = async (directory, reporter) => {
 	//
 	// If all child directories are releases, don't report anything 
 	// (children will be validated separately later in any case)
-	if (!directory.nfoFiles.length && isRelease(directory.name) && (!directory.folders.length || !directory.folders.every(isRelease))) {
+	if (!directory.nfoFiles.length && isReleaseName(directory.name) && (!directory.folders.length || !directory.folders.every(isReleaseName))) {
 		let found = false;
 		if (!directory.files.length) {
 			// Certain (old) releases may have NFO files inside the subdirectories

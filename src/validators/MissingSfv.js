@@ -1,8 +1,8 @@
 import fs from 'async-file';
 import path from 'path';
 
+import { isReleaseName } from './common';
 
-const simpleReleaseReg = /^[A-Z0-9]\S{3,}-[A-Za-z0-9_]{2,}$/; // case sensitive
 const rarMp3Reg = /(.+\.((r\d{2})|(0\d{2})|(mp3)|(flac)))/i;
 const mvidReg = /(.+\.(m2v|avi|mkv|mp(e)?g))/i;
 
@@ -16,7 +16,7 @@ const isSfvDirectory = directory => {
 		return true;
 	}
 
-	if (directory.name.match(simpleReleaseReg) && hasFiles(directory.files, mvidReg)) {
+	if (isReleaseName(directory.name) && hasFiles(directory.files, mvidReg)) {
 		return true;
 	}
 
