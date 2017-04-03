@@ -10,6 +10,7 @@ AirDC++ extension that performs various validations for release directories.
 ### Validators
 
 - Checks for missing/extra files based on the SFV file content
+- Detect missing/extra SFV/NFO files
 
 ## Development
 
