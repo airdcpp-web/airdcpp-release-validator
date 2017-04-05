@@ -8,7 +8,7 @@ const mvidReg = /(.+\.(m2v|avi|mkv|mp(e)?g))/i;
 
 
 const hasFiles = (files, reg) => {
-	return files.some(file => file.match(reg));
+	return files.some(file => reg.test(file));
 };
 
 const isSfvDirectory = directory => {

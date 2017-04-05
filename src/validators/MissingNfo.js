@@ -9,7 +9,7 @@ const subDirReg = /(((DVD|CD|DIS(K|C)).?([0-9](0-9)?))|Sample|Cover(s)?|.{0,5}Su
 
 // Checks if there are NFOs in any of the subdirectories
 const findNfo = (directory) => {
-	const isSubdir = name => name.match(subDirReg);
+	const isSubdir = name => subDirReg.test(name);
 
 	const isNfo = name => path.extname(name).toLowerCase() === '.nfo';
 

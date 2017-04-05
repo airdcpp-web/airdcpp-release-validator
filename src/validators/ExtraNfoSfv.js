@@ -12,7 +12,7 @@ const validate = async (directory, reporter) => {
 	}
 
 	if (!directory.files.length && !directory.folders.length && (directory.sfvFiles.length || directory.nfoFiles.length)) {
-		if (!directory.name.match(emptyDirReg)) {
+		if (!emptyDirReg.test(directory.name)) {
 			reporter.addFolder(directory.path, 'no_release_files', 'NFO/SFV found but there are no other files in the folder');
 		}
 	}

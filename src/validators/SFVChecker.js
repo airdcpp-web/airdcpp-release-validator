@@ -12,9 +12,9 @@ const flacReg = /.+(-|\()(LOSSLESS|FLAC)((-|\)).+)?/i;
  
 // Get regex for allowed extra files (type is detected from the directory name)
 const getExtrasReg = (name) => {
-	if (name.match(audioBookReg)) {
+	if (audioBookReg.test(name)) {
 		return audioBookExtrasReg;
-	} else if (name.match(flacReg)) {
+	} else if (flacReg.test(name)) {
 		return flacExtrasReg;
 	}
 
@@ -70,7 +70,7 @@ const validate = async (directory, reporter) => {
 	if (Object.keys(files).length > 0) {
 		const extrasReg = getExtrasReg(directory.name);
 		Object.values(files).forEach(file => {
-			if (!file.match(extrasReg)) {
+			if (!extrasReg.test(file)) {
 				reporter.addFile(file, 'extra_files', 'Extra files in release directory');
 			}
 		});
