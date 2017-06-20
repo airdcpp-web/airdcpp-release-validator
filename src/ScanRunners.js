@@ -28,7 +28,7 @@ const ScanRunners = function (socket, extensionName, validatorsGetter) {
 			text = 'Scan completed, no problems were found';
 		}
 
-		socket.logger.verbose(`Share scan completed: ${scanner.stats.scanned} paths scanned with maximum concurrency of ${scanner.stats.maxRunning}`);
+		socket.logger.info(`Share scan completed: ${scanner.stats.scanned} paths scanned with maximum concurrency of ${scanner.stats.maxRunning}`);
 		postEvent(text, scanner.errors.count() ? 'warning' : 'info');
 	};
 
@@ -55,8 +55,9 @@ const ScanRunners = function (socket, extensionName, validatorsGetter) {
 
 		// Scan it
 		const scanner = Scanner(validatorsGetter(), errorLogger);
-		await scanner.scanPath(bundle.path);
+		await scanner.scanPath(bundle.target);
 
+		socket.logger.info(`Bundle scan completed: ${scanner.stats.scanned} paths were scanned`);
 		if (scanner.errors.count()) {
 			// Failed, report and reject
 			const error = scanner.errors.pickOne();

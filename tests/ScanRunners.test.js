@@ -16,7 +16,7 @@ describe('Scan runner', () => {
 
 		const bundle = {
 			name: 'Test.Release-TEST',
-			path: scanPath,
+			target: scanPath,
 			type: {
 				id: 'directory',
 			},
