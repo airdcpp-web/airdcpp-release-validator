@@ -56,4 +56,25 @@ describe('Scan runner', () => {
 
 		expect(scanner.errors.count() > 0).toBe(true);
 	});
+
+	test('should report disk access errors', async () => {
+		const sharePaths = [
+			{
+				name: 'VNAME',
+				paths: [ path.join(__dirname, 'nonexistingdirectory') ],
+			}
+		];
+
+		const socket = {
+			post: _ => {},
+			get: _ => Promise.resolve(sharePaths),
+			logger,
+		};
+
+		const runner = ScanRunners(socket, 'test-extension', _ => validators);
+		const scanner = await runner.scanShare();
+
+		expect(scanner.errors.count() > 0).toBe(true);
+		expect(scanner.errors.format().indexOf('ENOENT')).not.toBe(-1);
+	});
 });

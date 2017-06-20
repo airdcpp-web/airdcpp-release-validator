@@ -35,7 +35,7 @@ const Scanner = (validators, errorLogger) => {
 		try {
 			contentList = await fs.readdir(directoryPath);
 		} catch (e) {
-			console.error(`Failed to scan the path ${path}: ${e}`);
+			errors.add('disk_read_error', `Failed to read disk content: ${e}`);
 			return null;
 		}
 
