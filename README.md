@@ -12,6 +12,16 @@ AirDC++ extension that performs various validations for release directories.
 - Checks for missing/extra files based on the SFV file content
 - Detect missing/extra SFV/NFO files
 
+All error will be reported in the event/system log. 
+
+**Example output:**
+
+```
+[airdcpp-release-validator] C:\testshare\Release.App-TESTING\: NFO file possibly missing
+[airdcpp-release-validator] C:\testshare\Missing.Files-TESTING\: File listed in the SFV file does not exist on disk (2 file(s): testfile1.mp3, testfile2.mp3)
+[airdcpp-release-validator] E:\Downloads\SFV-TESTING\: NFO/SFV found but there are no other files in the folder
+```
+
 ## What's new in each version
 
 [Commit log](https://github.com/maksis/airdcpp-release-validator/commits/master)
