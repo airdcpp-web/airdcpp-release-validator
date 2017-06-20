@@ -4,13 +4,21 @@ AirDC++ extension that performs various validations for release directories.
 
 ## Features
 
-- Scans the content of completed bundles
+- Scans the content of completed bundles: failed bundles are blocked from share with an error message until the error is fixed (or ignored)
 - Allows scanning the whole share manually (use the command `/rvalidator scan`)
 
 ### Validators
 
 - Checks for missing/extra files based on the SFV file content
 - Detect missing/extra SFV/NFO files
+
+## What's new in each version
+
+[Commit log](https://github.com/maksis/airdcpp-release-validator/commits/master)
+
+## Troubleshooting
+
+Enable extension debug mode from application settings and check the extension error logs (`Settings\extensions\airdcpp-release-validator\logs`) for additional information.
 
 ## Development
 
