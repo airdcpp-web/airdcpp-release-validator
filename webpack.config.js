@@ -28,6 +28,7 @@ if (!release) {
 }
 
 module.exports = {
+  mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
   entry: release ? './src/index.js' : './src/main.js',
   target: 'node',
   output: {
