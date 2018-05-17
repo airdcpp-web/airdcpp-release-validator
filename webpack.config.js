@@ -15,6 +15,8 @@ var plugins = [
   })
 ];
 
+console.log('Release: ' + release);
+
 if (!release) {
   // Required for debugging
   // Release build should add the require manually so that the module gets bundled
@@ -37,7 +39,7 @@ module.exports = {
     libraryTarget: 'umd'
   },
   plugins: plugins,
-  devtool: release ? 'cheap-module-source-map' : 'source-map',
+  devtool: 'source-map',
   module: {
     rules: [
       { 
