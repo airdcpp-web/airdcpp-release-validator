@@ -3,7 +3,8 @@
     ["@babel/env", {
       "targets": {
         "node": "0.10"
-      }
+      },
+      "useBuiltIns": "usage"
     }]
   ],
   "plugins": [
