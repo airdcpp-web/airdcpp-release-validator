@@ -25,17 +25,18 @@
     "test": "jest"
   },
   "devDependencies": {
-    "@babel/core": "^7.3.4",
-    "@babel/plugin-transform-async-to-generator": "^7.3.4",
+    "@babel/core": "^7.4.0",
+    "@babel/plugin-transform-async-to-generator": "^7.4.0",
     "@babel/plugin-transform-object-assign": "^7.2.0",
-    "@babel/plugin-transform-runtime": "^7.3.4",
-    "@babel/preset-env": "^7.3.4",
-    "@babel/runtime": "^7.3.4",
-    "airdcpp-extension": "^1.0.0",
-    "airdcpp-extension-settings": "^1.0.2",
+    "@babel/plugin-transform-runtime": "^7.4.0",
+    "@babel/preset-env": "^7.4.2",
+    "@babel/runtime": "^7.4.2",
+    "airdcpp-extension": "^1.1.0",
+    "airdcpp-extension-settings": "^1.1.0-beta",
     "async-file": "^2.0.2",
     "babel-core": "^7.0.0-bridge.0",
     "babel-loader": "^8.0.5",
+    "core-js": "^3.0.0",
     "cross-env": "^5.2.0",
     "eol": "^0.9.0",
     "jest-cli": "^24.5.0",
@@ -43,7 +44,7 @@
     "rimraf": "^2.6.3",
     "source-map-support": "^0.5.11",
     "webpack": "^4.29.6",
-    "webpack-cli": "^3.2.3"
+    "webpack-cli": "^3.3.0"
   },
   "main": "dist/main.js",
   "airdcpp": {

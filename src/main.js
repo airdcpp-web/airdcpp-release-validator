@@ -15,7 +15,7 @@ import SettingsManager from 'airdcpp-extension-settings';
 import ScanRunners from './ScanRunners';
 import validators from './validators';
 
-module.exports = function (socket, extension) {
+export default function (socket, extension) {
 	// INITIALIZATION
 	const settings = SettingsManager(socket, {
 		extensionName: extension.name, 
