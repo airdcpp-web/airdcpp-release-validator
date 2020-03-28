@@ -14,6 +14,7 @@ describe('SFV checker', () => {
 
 		expect(scanner.errors.count('file_missing')).toEqual(1);
 		expect(scanner.errors.count('extra_files')).toEqual(1);
+		expect(scanner.errors.count('invalid_sfv_file')).toEqual(0);
 	});
 
 	test('should detect invalid SFV files', async () => {
@@ -42,6 +43,8 @@ describe('SFV checker', () => {
 		const scanner = Scanner([ SFVChecker ], errorLogger);
 		await scanner.scanPath(scanPath);
 
-		expect(scanner.errors.count()).toEqual(3);
+		expect(scanner.errors.count('file_missing')).toEqual(3);
+		expect(scanner.errors.count('extra_files')).toEqual(0);
+		expect(scanner.errors.count('invalid_sfv_file')).toEqual(0);
 	});
 });
