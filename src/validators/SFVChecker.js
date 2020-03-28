@@ -21,7 +21,7 @@ const getExtrasReg = (name) => {
 	return normalExtrasReg;
 };
  
-const validateCondition = directory => directory.files.length && directory.sfvFiles.length;
+const validateCondition = directory => directory.sfvFiles.length;
 
 const isSfvOrNfo = (name) => {
 	const ext = path.extname(name);

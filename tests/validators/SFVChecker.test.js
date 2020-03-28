@@ -31,8 +31,17 @@ describe('SFV checker', () => {
 		const scanPath = path.join(__dirname, 'SFVChecker-data/Audiobook-(2005)-AUDIOBOOK-2006-TEST');
 
 		const scanner = Scanner([ SFVChecker ], errorLogger);
-		scanner.scanPath(scanPath);
+		await scanner.scanPath(scanPath);
 
 		expect(scanner.errors.count()).toEqual(0);
+	});
+
+	test('should perform scan if no release files are present', async () => {
+		const scanPath = path.join(__dirname, 'SFVChecker-data/No.Release.Files-TEST');
+
+		const scanner = Scanner([ SFVChecker ], errorLogger);
+		await scanner.scanPath(scanPath);
+
+		expect(scanner.errors.count()).toEqual(3);
 	});
 });
