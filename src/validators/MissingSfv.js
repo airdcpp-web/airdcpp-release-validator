@@ -3,7 +3,7 @@ import path from 'path';
 
 import { isReleaseName } from './common';
 
-const rarMp3Reg = /(.+\.((r\d{2})|(0\d{2})|(mp3)|(flac)))/i;
+const rarMp3Reg = /(.+\.((r\d{2})|(0\d{2})|(mp3)|(flac)))$/i;
 const mvidReg = /(.+\.(m2v|avi|mkv|mp(e)?g))/i;
 
 
@@ -22,7 +22,7 @@ const isSfvDirectory = directory => {
 
 	return false;
 };
- 
+
 const validate = async (directory, reporter) => {
 	// SFV files may also be inside subdirectory (directory name detection can't be used)
 	if (!directory.sfvFiles.length && isSfvDirectory(directory)) {
@@ -31,7 +31,7 @@ const validate = async (directory, reporter) => {
 };
 
 const validateCondition = directory => !directory.sfvFiles.length;
- 
+
 export default {
 	validateCondition,
 	validate,
