@@ -4,7 +4,7 @@ import path from 'path';
 import { isReleaseName } from './common';
 
 
-const subDirReg = /(((DVD|CD|DIS(K|C)).?([0-9](0-9)?))|Sample|Cover(s)?|.{0,5}Sub(s)?)/i;
+const subDirReg = /^(((DVD|CD|DIS(K|C)).?([0-9](0-9)?))|Sample|Cover(s)?|.{0,5}Sub(s)?)$/i;
 
 
 // Checks if there are NFOs in any of the subdirectories

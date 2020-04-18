@@ -3,8 +3,8 @@ import path from 'path';
 
 import { isReleaseName } from './common';
 
-const rarMp3Reg = /(.+\.((r\d{2})|(0\d{2})|(mp3)|(flac)))$/i;
-const mvidReg = /(.+\.(m2v|avi|mkv|mp(e)?g))/i;
+const rarMp3Reg = /^(.+\.(r\d{2}|0\d{2}|mp3|flac))$/i;
+const mvidReg = /^(.+\.(m2v|avi|mkv|mp(e)?g))$/i;
 
 
 const hasFiles = (files, reg) => {

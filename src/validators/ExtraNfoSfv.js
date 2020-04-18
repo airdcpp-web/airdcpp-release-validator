@@ -1,6 +1,6 @@
 import path from 'path';
 
-const emptyDirReg = /(\S*(((nfo|dir).?fix)|nfo.only)\S*)/i;
+const emptyDirReg = /^(\S*(((nfo|dir).?fix)|nfo.only)\S*)$/i;
 
 const validate = async (directory, reporter) => {
 	if (directory.nfoFiles.length > 1) {

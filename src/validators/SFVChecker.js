@@ -2,12 +2,12 @@ import path from 'path';
 import SFVReader from '../SFVReader';
  
  
-const audioBookExtrasReg = /.+\.(jp(e)?g|png|m3u|cue|zip|sfv|nfo)/i;
-const flacExtrasReg = /.+\.(jp(e)?g|png|m3u|cue|log|sfv|nfo)/i;
-const normalExtrasReg = /.+\.(jp(e)?g|png|m3u|cue|diz|sfv|nfo)/i;
+const audioBookExtrasReg = /^(.+\.(jp(e)?g|png|m3u|cue|zip|sfv|nfo))$/i;
+const flacExtrasReg = /^(.+\.(jp(e)?g|png|m3u|cue|log|sfv|nfo))$/i;
+const normalExtrasReg = /^(.+\.(jp(e)?g|png|m3u|cue|diz|sfv|nfo))$/i;
  
-const audioBookReg = /.+(-|\()AUDIOBOOK(-|\)).+/i;
-const flacReg = /.+(-|\()(LOSSLESS|FLAC)((-|\)).+)?/i;
+const audioBookReg = /^(.+(-|\()AUDIOBOOK(-|\)).+)$/i;
+const flacReg = /^(.+(-|\()(LOSSLESS|FLAC)((-|\)).+)?)$/i;
  
  
 // Get regex for allowed extra files (type is detected from the directory name)
