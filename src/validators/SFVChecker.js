@@ -45,7 +45,7 @@ const validate = async (directory, reporter) => {
 			await reader.load(file);
 			loadedSfvFiles++;
 		} catch (e) {
-			reporter.addFile( file, 'invalid_sfv_file', e);
+			reporter.addFile(file, 'invalid_sfv_file', e.message);
 		}
 	}));
 

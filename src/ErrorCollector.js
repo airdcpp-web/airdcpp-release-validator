@@ -1,4 +1,4 @@
-import path from 'path';
+import invariant from 'invariant';
 
 export const ValidatorErrorReporter = (directoryInfo, totalErrors, logger) => {
 	const validatorErrors = {};
@@ -9,6 +9,8 @@ export const ValidatorErrorReporter = (directoryInfo, totalErrors, logger) => {
 
 	// Initialize a new error object or return an existing one
 	const getError = (errorId, message) => {
+		invariant(typeof message === 'string', `Error message is not a string: ${message}`);
+		
 		validatorErrors[errorId] = validatorErrors[errorId] || {
 			files: [],
 			hasFolderError: false,
