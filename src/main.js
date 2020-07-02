@@ -6,11 +6,17 @@ const SettingDefinitions = [
 		title: 'Scan finished bundles',
 		default_value: true,
 		type: 'boolean'
+	}, {
+		key: 'scan_new_share_directories',
+		title: 'Scan new share directories',
+		default_value: true,
+		type: 'boolean'
 	}
 ];
 
 const CONFIG_VERSION = 1;
 
+import { addContextMenuItems } from 'airdcpp-apisocket';
 import SettingsManager from 'airdcpp-extension-settings';
 import ScanRunners from './ScanRunners';
 import validators from './validators';
@@ -80,7 +86,6 @@ export default function (socket, extension) {
 		accept();
 	};
 
-
 	// EXTENSION LIFECYCLE
 	extension.onStart = async (sessionInfo) => {
 		await settings.load();
@@ -93,9 +98,50 @@ export default function (socket, extension) {
 		if (settings.getValue('scan_finished_bundles')) {
 			socket.addHook('queue', 'queue_bundle_finished_hook', runners.onBundleFinished, subscriberInfo);
 		}
+		
+		if (settings.getValue('scan_new_share_directories') && sessionInfo.system_info.api_feature_level >= 4) {
+			socket.addHook('share', 'new_share_directory_validation_hook', runners.onShareDirectoryAdded, subscriberInfo);
+		}
 
 		socket.addHook('hubs', 'hub_outgoing_message_hook', onOutgoingHubMessage, subscriberInfo);
 		socket.addHook('private_chat', 'private_chat_outgoing_message_hook', onOutgoingPrivateMessage, subscriberInfo);
+		
+		if (sessionInfo.system_info.api_feature_level >= 4) {
+			addContextMenuItems(
+				socket,
+				[
+					{
+						id: 'scan_missing_extra',
+						title: `Scan for missing/extra files`,
+						icon: {
+							semantic: 'yellow broom'
+						},
+						onClick: runners.scanShareRoots,
+					}
+				],
+				'share_root',
+				subscriberInfo,
+			);
+			
+			addContextMenuItems(
+				socket,
+				[
+					{
+						id: 'scan_missing_extra',
+						title: `Scan share for missing/extra files`,
+						icon: {
+							semantic: 'yellow broom'
+						},
+						onClick: async () => {
+							await runners.scanShare();
+						},
+						filter: ids => ids.indexOf(extension.name) !== -1
+					}
+				],
+				'extension',
+				subscriberInfo,
+			);
+		}
 	};
 
 	extension.onStop = () => {

@@ -11,7 +11,7 @@ describe('Scan runner', () => {
 		error: _ => {},
 	}
 
-	test('should reject failed bundles', async () => {
+	test('should reject invalid bundles', async () => {
 		const scanPath = path.join(__dirname, 'data/Test.Release-TEST');
 
 		const bundle = {
@@ -35,6 +35,49 @@ describe('Scan runner', () => {
 
 		expect(reject.mock.calls.length).toBe(1);
 		expect(accept.mock.calls.length).toBe(0);
+	});
+
+	test('should reject invalid new share directories', async () => {
+		const scanPath = path.join(__dirname, 'data/Test.Release-TEST');
+
+		const hookData = {
+			path: scanPath,
+			new_parent: false,
+		};
+
+		const socket = {
+			post: _ => {},
+			logger,
+		};
+
+		const reject = jest.fn();
+		const accept = jest.fn();
+
+		const runner = ScanRunners(socket, 'test-extension', _ => validators);
+		await runner.onShareDirectoryAdded(hookData, accept, reject);
+
+		expect(reject.mock.calls.length).toBe(1);
+		expect(accept.mock.calls.length).toBe(0);
+	});
+
+	test('should scan share roots', async () => {
+		const scanPath = path.join(__dirname, 'data/Test.Release-TEST');
+
+		const shareRootInfo = {
+			id: 1,
+			path: scanPath,
+		};
+
+		const socket = {
+			post: _ => {},
+			get: _ => Promise.resolve(shareRootInfo),
+			logger,
+		};
+
+		const runner = ScanRunners(socket, 'test-extension', _ => validators);
+		const scanner = await runner.scanShareRoots([ 1 ]);
+
+		expect(scanner.errors.count() > 0).toBe(true);
 	});
 
 	test('should perform share scan', async () => {

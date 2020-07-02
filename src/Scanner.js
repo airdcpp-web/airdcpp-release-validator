@@ -62,7 +62,7 @@ const Scanner = (validators, errorLogger) => {
 		validatorErrors.flush();
 	};
 
-	const scanPath = async (directoryPath) => {
+	const scanPath = async (directoryPath, recursive = true) => {
 		running++;
 		if (running > maxRunning) {
 			maxRunning = running;
@@ -81,11 +81,13 @@ const Scanner = (validators, errorLogger) => {
 		running--;
 		scanned++;
 
-		// Scan children
-		// Use sequential scan to avoid piling up too many tasks 
-		// (and the extension becoming unresponsive)
-		const childPaths = content.folders.map(name => path.join(directoryPath, name) + path.sep);
-		await scanPathsSequential(childPaths);
+		if (recursive) {
+			// Scan children
+			// Use sequential scan to avoid piling up too many tasks 
+			// (and the extension becoming unresponsive)
+			const childPaths = content.folders.map(name => path.join(directoryPath, name) + path.sep);
+			await scanPathsSequential(childPaths);
+		}
 	};
 
 	const scanPathsConcurrent = async (paths) => {

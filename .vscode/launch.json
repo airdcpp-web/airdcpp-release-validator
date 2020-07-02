@@ -30,14 +30,12 @@
 				"--runInBand"
 			],
 			"cwd": "${workspaceRoot}"
-		}
-		/*,
-		{
+		}, {
 			"type": "node",
 			"request": "attach",
 			"name": "Attach to Process",
 			"address": "localhost",
 			"port": 5858
-		}*/
+		}
 	]
 }
