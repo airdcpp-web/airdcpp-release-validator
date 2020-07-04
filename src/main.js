@@ -116,6 +116,7 @@ export default function (socket, extension) {
 						icon: {
 							semantic: 'yellow broom'
 						},
+						access: 'settings_edit',
 						onClick: runners.scanShareRoots,
 					}
 				],
@@ -132,6 +133,7 @@ export default function (socket, extension) {
 						icon: {
 							semantic: 'yellow broom'
 						},
+						access: 'settings_edit',
 						onClick: async () => {
 							await runners.scanShare();
 						},
