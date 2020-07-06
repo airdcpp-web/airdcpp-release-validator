@@ -21,6 +21,12 @@ import SettingsManager from 'airdcpp-extension-settings';
 import ScanRunners from './ScanRunners';
 import validators from './validators';
 
+const SCAN_ACCESS = 'settings_edit';
+
+const hasScanAccess = (permissions) => {
+	return permissions.indexOf('admin') !== -1 || permissions.indexOf(SCAN_ACCESS) !== -1;
+};
+
 export default function (socket, extension) {
 	// INITIALIZATION
 	const settings = SettingsManager(socket, {
@@ -40,8 +46,8 @@ export default function (socket, extension) {
 	const runners = ScanRunners(socket, extension.name, _ => validators.filter(validatorEnabled));
 
 
-	// CHAT COMMANDS
-	const checkChatCommand = (text) => {
+	// CHAT COMMANDS (legacy, remove later)
+	const checkLegacyChatCommand = (text) => {
 		if (text.length === 0 || text[0] !== '/') {
 			return null;
 		}
@@ -62,7 +68,7 @@ export default function (socket, extension) {
 	};
 
 	const onOutgoingHubMessage = (message, accept, reject) => {
-		const statusMessage = checkChatCommand(message.text);
+		const statusMessage = checkLegacyChatCommand(message.text);
 		if (statusMessage) {
 			socket.post('hubs/status_message', {
 				hub_urls: [ message.hub_url ],
@@ -75,7 +81,7 @@ export default function (socket, extension) {
 	};
 
 	const onOutgoingPrivateMessage = (message, accept, reject) => {
-		const statusMessage = checkChatCommand(message.text);
+		const statusMessage = checkLegacyChatCommand(message.text);
 		if (statusMessage) {
 			socket.post(`private_chat/${message.user.cid}/status_message`, {
 				text: statusMessage,
@@ -84,6 +90,48 @@ export default function (socket, extension) {
 		}
 
 		accept();
+	};
+
+	// CHAT COMMANDS
+	const checkChatCommand = (data) => {
+		const { command, args, permissions } = data;
+		if (!hasScanAccess(permissions)) {
+			return null;
+		}
+
+		switch (command) {
+			case 'help': {
+				return `
+
+	Release validator commands
+
+	/rvalidator scan - Scan the entire share for invalid content
+			
+				`;
+			}
+			case 'rvalidator': {
+				if (!!args.length) {
+					switch (args[0]) {
+						case 'scan': {
+							runners.scanShare();
+							break;
+						}
+					}
+				}
+			}
+		}
+
+		return null;
+	};
+
+	const onChatCommand = (type, data, entityId) => {
+		const statusMessage = checkChatCommand(data);
+		if (statusMessage) {
+			socket.post(`${type}/${entityId}/status_message`, {
+				text: statusMessage,
+				severity: 'info',
+			});
+		}
 	};
 
 	// EXTENSION LIFECYCLE
@@ -102,11 +150,11 @@ export default function (socket, extension) {
 		if (settings.getValue('scan_new_share_directories') && sessionInfo.system_info.api_feature_level >= 4) {
 			socket.addHook('share', 'new_share_directory_validation_hook', runners.onShareDirectoryAdded, subscriberInfo);
 		}
-
-		socket.addHook('hubs', 'hub_outgoing_message_hook', onOutgoingHubMessage, subscriberInfo);
-		socket.addHook('private_chat', 'private_chat_outgoing_message_hook', onOutgoingPrivateMessage, subscriberInfo);
 		
 		if (sessionInfo.system_info.api_feature_level >= 4) {
+			socket.addListener('hubs', 'hub_text_command', onChatCommand.bind(this, 'hubs'));
+			socket.addListener('private_chat', 'private_chat_text_command', onChatCommand.bind(this, 'private_chat'));
+
 			addContextMenuItems(
 				socket,
 				[
@@ -116,7 +164,7 @@ export default function (socket, extension) {
 						icon: {
 							semantic: 'yellow broom'
 						},
-						access: 'settings_edit',
+						access: SCAN_ACCESS,
 						onClick: runners.scanShareRoots,
 					}
 				],
@@ -133,7 +181,7 @@ export default function (socket, extension) {
 						icon: {
 							semantic: 'yellow broom'
 						},
-						access: 'settings_edit',
+						access: SCAN_ACCESS,
 						onClick: async () => {
 							await runners.scanShare();
 						},
@@ -143,6 +191,9 @@ export default function (socket, extension) {
 				'extension',
 				subscriberInfo,
 			);
+		} else {
+			socket.addHook('hubs', 'hub_outgoing_message_hook', onOutgoingHubMessage, subscriberInfo);
+			socket.addHook('private_chat', 'private_chat_outgoing_message_hook', onOutgoingPrivateMessage, subscriberInfo);
 		}
 	};
 
