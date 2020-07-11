@@ -24,7 +24,7 @@ All error will be reported in the event/system log.
 
 ## What's new in each version
 
-[Commit log](https://github.com/maksis/airdcpp-release-validator/commits/master)
+[Changelog](https://github.com/maksis/airdcpp-release-validator/blob/master/CHANGELOG.md)
 
 ## Troubleshooting
 
