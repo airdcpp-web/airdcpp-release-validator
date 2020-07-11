@@ -46,52 +46,6 @@ export default function (socket, extension) {
 	const runners = ScanRunners(socket, extension.name, _ => validators.filter(validatorEnabled));
 
 
-	// CHAT COMMANDS (legacy, remove later)
-	const checkLegacyChatCommand = (text) => {
-		if (text.length === 0 || text[0] !== '/') {
-			return null;
-		}
-
-		if (text.indexOf('/help') === 0) {
-			return `
-
-	Release validator commands
-
-	/rvalidator scan - Scan the entire share for invalid content
-
-			`;
-		} else if (text.indexOf('/rvalidator scan') === 0) {
-			runners.scanShare();
-		}
-
-		return null;
-	};
-
-	const onOutgoingHubMessage = (message, accept, reject) => {
-		const statusMessage = checkLegacyChatCommand(message.text);
-		if (statusMessage) {
-			socket.post('hubs/status_message', {
-				hub_urls: [ message.hub_url ],
-				text: statusMessage,
-				severity: 'info',
-			});
-		}
-
-		accept();
-	};
-
-	const onOutgoingPrivateMessage = (message, accept, reject) => {
-		const statusMessage = checkLegacyChatCommand(message.text);
-		if (statusMessage) {
-			socket.post(`private_chat/${message.user.cid}/status_message`, {
-				text: statusMessage,
-				severity: 'info',
-			});
-		}
-
-		accept();
-	};
-
 	// CHAT COMMANDS
 	const checkChatCommand = (data) => {
 		const { command, args, permissions } = data;
@@ -147,54 +101,49 @@ export default function (socket, extension) {
 			socket.addHook('queue', 'queue_bundle_finished_hook', runners.onBundleFinished, subscriberInfo);
 		}
 		
-		if (settings.getValue('scan_new_share_directories') && sessionInfo.system_info.api_feature_level >= 4) {
+		if (settings.getValue('scan_new_share_directories')) {
 			socket.addHook('share', 'new_share_directory_validation_hook', runners.onShareDirectoryAdded, subscriberInfo);
 		}
 		
-		if (sessionInfo.system_info.api_feature_level >= 4) {
-			socket.addListener('hubs', 'hub_text_command', onChatCommand.bind(this, 'hubs'));
-			socket.addListener('private_chat', 'private_chat_text_command', onChatCommand.bind(this, 'private_chat'));
+		socket.addListener('hubs', 'hub_text_command', onChatCommand.bind(this, 'hubs'));
+		socket.addListener('private_chat', 'private_chat_text_command', onChatCommand.bind(this, 'private_chat'));
 
-			addContextMenuItems(
-				socket,
-				[
-					{
-						id: 'scan_missing_extra',
-						title: `Scan for missing/extra files`,
-						icon: {
-							semantic: 'yellow broom'
-						},
-						access: SCAN_ACCESS,
-						onClick: runners.scanShareRoots,
-					}
-				],
-				'share_root',
-				subscriberInfo,
-			);
-			
-			addContextMenuItems(
-				socket,
-				[
-					{
-						id: 'scan_missing_extra',
-						title: `Scan share for missing/extra files`,
-						icon: {
-							semantic: 'yellow broom'
-						},
-						access: SCAN_ACCESS,
-						onClick: async () => {
-							await runners.scanShare();
-						},
-						filter: ids => ids.indexOf(extension.name) !== -1
-					}
-				],
-				'extension',
-				subscriberInfo,
-			);
-		} else {
-			socket.addHook('hubs', 'hub_outgoing_message_hook', onOutgoingHubMessage, subscriberInfo);
-			socket.addHook('private_chat', 'private_chat_outgoing_message_hook', onOutgoingPrivateMessage, subscriberInfo);
-		}
+		addContextMenuItems(
+			socket,
+			[
+				{
+					id: 'scan_missing_extra',
+					title: `Scan for missing/extra files`,
+					icon: {
+						semantic: 'yellow broom'
+					},
+					access: SCAN_ACCESS,
+					onClick: runners.scanShareRoots,
+				}
+			],
+			'share_root',
+			subscriberInfo,
+		);
+		
+		addContextMenuItems(
+			socket,
+			[
+				{
+					id: 'scan_missing_extra',
+					title: `Scan share for missing/extra files`,
+					icon: {
+						semantic: 'yellow broom'
+					},
+					access: SCAN_ACCESS,
+					onClick: async () => {
+						await runners.scanShare();
+					},
+					filter: ids => ids.indexOf(extension.name) !== -1
+				}
+			],
+			'extension',
+			subscriberInfo,
+		);
 	};
 
 	extension.onStop = () => {
