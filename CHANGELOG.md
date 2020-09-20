@@ -1,4 +1,10 @@
-### Version 1.0.0 (2020-07-xx)
+### Version 1.1.0 (2020-09-xx)
+
+- Add an option for ignoring files/directories that are excluded from share (disabled by default)
+- Fix share roots not being scanned recursively
+- Log scan duration in the extension log file
+
+### Version 1.0.0 (2020-07-11)
 
 - Add extension context menu item for scanning the whole share
 - Add context menu item for scanning specific share roots

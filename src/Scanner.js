@@ -6,15 +6,22 @@ import fs from 'async-file';
 
 
 // Scanner instance
-const Scanner = (validators, errorLogger) => {
+const Scanner = (validators, errorLogger, validatePath) => {
+	const start = new Date();
+
 	const errors = TotalErrorCounter();
-	let running = 0, maxRunning = 0, scanned = 0;
+	let running = 0, maxRunning = 0, scanned = 0, ignoredFiles = 0, ignoredDirectories = 0;
 
 	// Add file in content info object
 	const parseFile = async (directoryInfo, name) => {
 		const fullPath = path.join(directoryInfo.path, name);
 		const stat = await fs.stat(fullPath);
 		if (stat.isFile()) {
+			if (!await validatePath(fullPath)) {
+				ignoredFiles++;
+				return;
+			}
+
 			const extension = path.extname(name).toLowerCase();
 			if (extension === '.sfv') {
 				directoryInfo.sfvFiles.push(name);
@@ -24,6 +31,11 @@ const Scanner = (validators, errorLogger) => {
 				directoryInfo.files.push(name);
 			}
 		} else {
+			if (!await validatePath(fullPath + path.sep)) {
+				ignoredDirectories++;
+				return;
+			}
+
 			directoryInfo.folders.push(name);
 		}
 	};
@@ -91,7 +103,7 @@ const Scanner = (validators, errorLogger) => {
 	};
 
 	const scanPathsConcurrent = async (paths) => {
-		await Promise.all(paths.map(scanPath));
+		await Promise.all(paths.map(p => scanPath(p)));
 	};
 
 	const scanPathsSequential = async (paths) => {
@@ -112,6 +124,9 @@ const Scanner = (validators, errorLogger) => {
 			return {
 				maxRunning,
 				scanned,
+				ignoredDirectories,
+				ignoredFiles,
+				duration: new Date().getTime() - start.getTime(),
 			};
 		}
 	};

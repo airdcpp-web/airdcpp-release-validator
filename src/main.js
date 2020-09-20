@@ -11,7 +11,12 @@ const SettingDefinitions = [
 		title: 'Scan new share directories',
 		default_value: true,
 		type: 'boolean'
-	}
+	}, {
+		key: 'ignore_excluded',
+		title: 'Ignore files/directories that are excluded from share',
+		default_value: false,
+		type: 'boolean'
+	},
 ];
 
 const CONFIG_VERSION = 1;
@@ -43,54 +48,63 @@ export default function (socket, extension) {
 		return !setting || settings.getValue(setting.key);
 	};
 
-	const runners = ScanRunners(socket, extension.name, _ => validators.filter(validatorEnabled));
-
-
-	// CHAT COMMANDS
-	const checkChatCommand = (data) => {
-		const { command, args, permissions } = data;
-		if (!hasScanAccess(permissions)) {
-			return null;
-		}
-
-		switch (command) {
-			case 'help': {
-				return `
-
-	Release validator commands
-
-	/rvalidator scan - Scan the entire share for invalid content
-			
-				`;
-			}
-			case 'rvalidator': {
-				if (!!args.length) {
-					switch (args[0]) {
-						case 'scan': {
-							runners.scanShare();
-							break;
-						}
-					}
-				}
-			}
-		}
-
-		return null;
-	};
-
-	const onChatCommand = (type, data, entityId) => {
-		const statusMessage = checkChatCommand(data);
-		if (statusMessage) {
-			socket.post(`${type}/${entityId}/status_message`, {
-				text: statusMessage,
-				severity: 'info',
-			});
-		}
-	};
+	let runners;
 
 	// EXTENSION LIFECYCLE
 	extension.onStart = async (sessionInfo) => {
 		await settings.load();
+
+		runners = ScanRunners(
+			socket, 
+			extension.name,
+			_ => ({
+				ignoreExcluded: settings.getValue('ignore_excluded'),
+				validators: validators.filter(validatorEnabled),
+			})
+		);
+	
+	
+		// CHAT COMMANDS
+		const checkChatCommand = (data) => {
+			const { command, args, permissions } = data;
+			if (!hasScanAccess(permissions)) {
+				return null;
+			}
+	
+			switch (command) {
+				case 'help': {
+					return `
+
+	Release validator commands
+
+	/rvalidator scan - Scan the entire share for invalid content
+
+					`;
+				}
+				case 'rvalidator': {
+					if (!!args.length) {
+						switch (args[0]) {
+							case 'scan': {
+								runners.scanShare();
+								break;
+							}
+						}
+					}
+				}
+			}
+	
+			return null;
+		};
+	
+		const onChatCommand = (type, data, entityId) => {
+			const statusMessage = checkChatCommand(data);
+			if (statusMessage) {
+				socket.post(`${type}/${entityId}/status_message`, {
+					text: statusMessage,
+					severity: 'info',
+				});
+			}
+		};
 
 		const subscriberInfo = {
 			id: extension.name,
@@ -148,6 +162,8 @@ export default function (socket, extension) {
 
 	extension.onStop = () => {
 		// Stop possible running scans
-		runners.stop();
+		if (runners) {
+			runners.stop();
+		}
 	};
 };
