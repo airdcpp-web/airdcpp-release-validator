@@ -9,5 +9,5 @@ const ManagedExtension = require('airdcpp-extension').ManagedExtension;
 
 // See https://github.com/airdcpp-web/airdcpp-extension-js for usage information
 ManagedExtension(require('./main.js'), {
-	// Possible custom options for airdcpp-apisocket can be listed here
+  // Possible custom options for airdcpp-apisocket can be listed here
 });
