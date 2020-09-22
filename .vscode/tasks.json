@@ -18,6 +18,10 @@
 			"taskName": "webpack",
 			"args": ["run", "webpack"],
 			"problemMatcher": "$tsc"
+		}, {
+			"taskName": "webpack:prof",
+			"args": ["run", "webpack:prof"],
+			"problemMatcher": "$tsc"
 		}
 	]
 }

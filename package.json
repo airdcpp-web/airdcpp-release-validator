@@ -23,7 +23,7 @@
     "prepublishOnly": "npm run build",
     "webpack": "webpack",
     "webpack:prod": "cross-env NODE_ENV=production webpack",
-    "webpack:prof": "cross-env NODE_ENV=production PROF=1 webpack",
+    "webpack:prof": "cross-env NODE_ENV=production PROFILING=1 webpack",
     "test": "jest"
   },
   "devDependencies": {

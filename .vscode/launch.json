@@ -5,15 +5,47 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
+			"name": "Launch Program",
 			"type": "node",
 			"request": "launch",
 			"console": "integratedTerminal",
-			"name": "Launch Program",
 			"program": "${workspaceRoot}\\devtools\\dev-server.js",
 			"protocol": "inspector",
 			"cwd": "${workspaceRoot}",
 			"outFiles": [ "${workspaceRoot}/dist/*.js" ],
 			"preLaunchTask": "webpack"
+		}, {
+			"name": "Launch Program with profiler",
+			"type": "node",
+			"request": "launch",
+			"console": "integratedTerminal",
+			"program": "${workspaceRoot}\\devtools\\dev-server.js",
+			"cwd": "${workspaceRoot}",
+			"outFiles": [ "${workspaceRoot}/dist/*.js" ],
+			"preLaunchTask": "webpack:prof",
+			"env": {
+				"NODE_ENV": "production",
+				"PROFILING": "1"
+			},
+			"runtimeArgs": [
+				"--prof"
+			],
+		}, {
+			"name": "Launch Program with inspector",
+			"type": "node",
+			"request": "launch",
+			"console": "integratedTerminal",
+			"program": "${workspaceRoot}\\devtools\\dev-server.js",
+			"cwd": "${workspaceRoot}",
+			"outFiles": [ "${workspaceRoot}/dist/*.js" ],
+			"preLaunchTask": "webpack:prof",
+			"env": {
+				"NODE_ENV": "production",
+				"PROFILING": "1"
+			},
+			"runtimeArgs": [
+				"--inspect"
+			],
 		}, {
 			"name": "Run Tests With Debugger",
 			"type": "node",

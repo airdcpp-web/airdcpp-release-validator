@@ -1,11 +1,12 @@
-var path = require('path');
-var webpack = require('webpack');
+const path = require('path');
+const webpack = require('webpack');
 
-var packageJson = require('./package.json');
+const packageJson = require('./package.json');
 
-var release = process.env.NODE_ENV === 'production';
+const release = process.env.NODE_ENV === 'production';
+const profiling = !!process.env.PROFILING;
 
-var plugins = [
+const plugins = [
   // Optional binary requires that should be ignored
   new webpack.IgnorePlugin(/.*\/build\/.*\/(validation|bufferutil)/),
   new webpack.DefinePlugin({
@@ -16,6 +17,7 @@ var plugins = [
 ];
 
 console.log('Release: ' + release);
+console.log('Profiling: ' + profiling);
 
 if (!release) {
   // Required for debugging
@@ -31,12 +33,15 @@ if (!release) {
 
 module.exports = {
   mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
-  entry: release ? './src/index.js' : './src/main.js',
+  entry: release && !profiling ? './src/index.js' : './src/main.js',
   target: 'node',
   output: {
     path: path.join(__dirname, 'dist'),
     filename: 'main.js',
     libraryTarget: 'umd'
+  },
+  optimization: {
+    minimize: release && !profiling ? true : false,
   },
   plugins: plugins,
   devtool: 'source-map',
