@@ -10,7 +10,7 @@ const Scanner = (validators, errorLogger, validatePath) => {
   const start = new Date();
 
   const errors = TotalErrorCounter();
-  let running = 0, maxRunning = 0, scanned = 0, ignoredFiles = 0, ignoredDirectories = 0;
+  let running = 0, maxRunning = 0, scannedDirectories = 0, scannedFiles = 0, ignoredFiles = 0, ignoredDirectories = 0;
 
   // Add file in content info object
   const parseFile = async (directoryInfo, name) => {
@@ -91,7 +91,8 @@ const Scanner = (validators, errorLogger, validatePath) => {
     await Promise.all(promises);
 
     running--;
-    scanned++;
+    scannedDirectories++;
+    scannedFiles += content.files.length + content.sfvFiles.length + content.nfoFiles.length;
 
     if (recursive) {
       // Scan children
@@ -123,10 +124,13 @@ const Scanner = (validators, errorLogger, validatePath) => {
     get stats() {
       return {
         maxRunning,
-        scanned,
+        duration: new Date().getTime() - start.getTime(),
+
+        scannedDirectories,
+        scannedFiles,
+
         ignoredDirectories,
         ignoredFiles,
-        duration: new Date().getTime() - start.getTime(),
       };
     }
   };

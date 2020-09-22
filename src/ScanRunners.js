@@ -18,11 +18,11 @@ const ScanRunners = function (socket, extensionName, configGetter) {
   // Log extension info (debug) message after the scan was completed
   const logCompleted = (scanner, message) => {
     let text = message;
-    text += ` (took ${scanner.stats.duration} ms`;
+    text += `: scanned ${scanner.stats.scannedDirectories} directories and ${scanner.stats.scannedFiles} files, took ${scanner.stats.duration} ms`;
+    text += ` (${(scanner.stats.duration / scanner.stats.scannedDirectories).toFixed(2)} ms per directory, ${(scanner.stats.duration / scanner.stats.scannedFiles).toFixed(2)} ms per file)`;
     if (scanner.stats.ignoredFiles > 0 || scanner.stats.ignoredDirectories > 0) {
       text += `, ignored ${scanner.stats.ignoredDirectories} directories and ${scanner.stats.ignoredFiles} files`;
     }
-    text += ')';
 
     socket.logger.info(text);
   };
@@ -62,7 +62,7 @@ const ScanRunners = function (socket, extensionName, configGetter) {
       text = 'Scan completed, no problems were found';
     }
 
-    logCompleted(scanner, `Scan completed: ${scanner.stats.scanned} paths scanned with maximum concurrency of ${scanner.stats.maxRunning}`);
+    logCompleted(scanner, `Manual scan completed with maximum concurrency of ${scanner.stats.maxRunning}`);
     postEvent(text, scanner.errors.count() ? 'warning' : 'info');
   };
 
@@ -101,7 +101,7 @@ const ScanRunners = function (socket, extensionName, configGetter) {
     const scanner = Scanner(configGetter().validators, errorLogger, pathValidator(true));
     await scanner.scanPath(bundle.target);
 
-    logCompleted(scanner, `Bundle scan completed: ${scanner.stats.scanned} paths were scanned`);
+    logCompleted(scanner, 'Bundle scan completed');
     if (scanner.errors.count()) {
       // Failed, report and reject
       const error = scanner.errors.pickOne();
@@ -125,7 +125,7 @@ const ScanRunners = function (socket, extensionName, configGetter) {
     const scanner = Scanner(configGetter().validators, errorLogger, pathValidator(false));
     await scanner.scanPath(path, false);
 
-    logCompleted(scanner, `Share directory scan completed: ${scanner.stats.scanned} paths were scanned`);
+    logCompleted(scanner, 'New share directory scan completed');
     if (scanner.errors.count()) {
       // Failed, report and reject
       const error = scanner.errors.pickOne();

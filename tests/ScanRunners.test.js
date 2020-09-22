@@ -47,7 +47,7 @@ describe('Scan runner', () => {
 
     expect(reject.mock.calls.length).toBe(1);
     expect(accept.mock.calls.length).toBe(0);
-    expect(scanner.stats.scanned).toBe(2);
+    expect(scanner.stats.scannedDirectories).toBe(2);
   });
 
   test('should reject invalid new share directories', async () => {
@@ -71,7 +71,7 @@ describe('Scan runner', () => {
 
     expect(reject.mock.calls.length).toBe(1);
     expect(accept.mock.calls.length).toBe(0);
-    expect(scanner.stats.scanned).toBe(1); // Not recursive
+    expect(scanner.stats.scannedDirectories).toBe(1); // Not recursive
   });
 
   test('should ignore excluded files/directories', async () => {
@@ -114,7 +114,7 @@ describe('Scan runner', () => {
     expect(reject.mock.calls.length).toBe(0);
     expect(accept.mock.calls.length).toBe(1);
     expect(ignoredPathFn.mock.calls.length).toBe(2);
-    expect(scanner.stats.scanned).toBe(1);
+    expect(scanner.stats.scannedDirectories).toBe(1);
   });
 
   test('should scan share roots', async () => {
@@ -135,7 +135,7 @@ describe('Scan runner', () => {
     const scanner = await runner.scanShareRoots([ 1 ]);
 
     expect(scanner.errors.count() > 0).toBe(true);
-    expect(scanner.stats.scanned).toBe(2);
+    expect(scanner.stats.scannedDirectories).toBe(2);
   });
 
   test('should perform share scan', async () => {
