@@ -36,7 +36,7 @@ const ScanRunners = function (socket, extensionName, configGetter) {
       try {
         await socket.post('share/validate_path', {
           path,
-          skip_queue_check: skipQueueCheck,
+          skip_check_queue: skipQueueCheck,
         });
       } catch (e) {
         socket.logger.verbose(`Path ${path} is ignored from share (${e.message})`);
