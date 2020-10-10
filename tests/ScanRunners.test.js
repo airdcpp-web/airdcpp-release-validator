@@ -117,6 +117,46 @@ describe('Scan runner', () => {
     expect(scanner.stats.scannedDirectories).toBe(1);
   });
 
+
+  test('should not proceed if all files in the directory are excluded', async () => {
+    const scanPath = path.join(__dirname, 'data/Test.Release-TEST');
+
+    const ignoredPathFn = jest.fn();
+    const socket = {
+      post: (url, data) => {
+        // Events
+        if (url.startsWith('events')) {
+          return {};
+        }
+
+        if (url.startsWith('share')) {
+          // Share validator, fail all
+          ignoredPathFn(url, data);
+          throw Error('Ignored');
+        }
+
+        return {};
+      },
+      logger,
+    };
+
+    const hookData = {
+      path: scanPath,
+      new_parent: false,
+    };
+    
+    const reject = jest.fn();
+    const accept = jest.fn();
+
+    const runner = getScanRunners(socket, true);
+    const scanner = await runner.onShareDirectoryAdded(hookData, accept, reject);
+
+    expect(reject.mock.calls.length).toBe(0);
+    expect(accept.mock.calls.length).toBe(1);
+    expect(ignoredPathFn.mock.calls.length).toBe(6);
+    expect(scanner.stats.scannedDirectories).toBe(0);
+  });
+
   test('should scan share roots', async () => {
     const scanPath = path.join(__dirname, 'data/Test.Release-TEST');
 

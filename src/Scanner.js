@@ -13,6 +13,7 @@ const Scanner = (validators, errorLogger, validatePath) => {
   let running = 0, maxRunning = 0, scannedDirectories = 0, scannedFiles = 0, ignoredFiles = 0, ignoredDirectories = 0;
 
   // Add file in content info object
+  // Returns false in case of errors
   const parseFile = async (directoryInfo, name) => {
     const fullPath = path.join(directoryInfo.path, name);
 
@@ -21,13 +22,13 @@ const Scanner = (validators, errorLogger, validatePath) => {
       stat = await fs.stat(fullPath);
     } catch (e) {
       errors.add('disk_read_error', `Failed to read file: ${e}`);
-      return;
+      return false;
     }
 
     if (stat.isFile()) {
       if (!await validatePath(fullPath)) {
         ignoredFiles++;
-        return;
+        return false;
       }
 
       const extension = path.extname(name).toLowerCase();
@@ -41,11 +42,13 @@ const Scanner = (validators, errorLogger, validatePath) => {
     } else {
       if (!await validatePath(fullPath + path.sep)) {
         ignoredDirectories++;
-        return;
+        return false;
       }
 
       directoryInfo.folders.push(name);
     }
+
+    return true;
   };
 
   // Return info object about the folder content
@@ -68,7 +71,12 @@ const Scanner = (validators, errorLogger, validatePath) => {
       nfoFiles: [],
     };
 
-    await Promise.all(contentList.map(parseFile.bind(this, info)));
+    const contentResults = await Promise.all(contentList.map(parseFile.bind(this, info)));
+    if (contentResults.every(res => res === false)) {
+      // All files failed, don't proceed with the scan as the scanners would just add confusing errors if there is no content
+      return null;
+    }
+
     return info;
   };
 
