@@ -39,7 +39,7 @@ const ScanRunners = function (socket, extensionName, configGetter) {
           skip_queue_check: skipQueueCheck,
         });
       } catch (e) {
-        socket.logger.verbose(`Path ${path} is ignored from share`);
+        socket.logger.verbose(`Path ${path} is ignored from share (${e.message})`);
         return false;
       }
 

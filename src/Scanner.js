@@ -15,7 +15,15 @@ const Scanner = (validators, errorLogger, validatePath) => {
   // Add file in content info object
   const parseFile = async (directoryInfo, name) => {
     const fullPath = path.join(directoryInfo.path, name);
-    const stat = await fs.stat(fullPath);
+
+    let stat;
+    try {
+      stat = await fs.stat(fullPath);
+    } catch (e) {
+      errors.add('disk_read_error', `Failed to read file: ${e}`);
+      return;
+    }
+
     if (stat.isFile()) {
       if (!await validatePath(fullPath)) {
         ignoredFiles++;
