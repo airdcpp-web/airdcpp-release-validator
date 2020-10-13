@@ -116,7 +116,8 @@ export default function (socket, extension) {
     }
     
     if (settings.getValue('scan_new_share_directories')) {
-      socket.addHook('share', 'new_share_directory_validation_hook', runners.onShareDirectoryAdded, subscriberInfo);
+      // Starting from feature level 5, the application will handle error reporting
+      socket.addHook('share', 'new_share_directory_validation_hook', runners.onShareDirectoryAdded.bind(this, sessionInfo.system_info.api_feature_level <= 4), subscriberInfo);
     }
     
     socket.addListener('hubs', 'hub_text_command', onChatCommand.bind(this, 'hubs'));

@@ -67,7 +67,7 @@ describe('Scan runner', () => {
     const accept = jest.fn();
 
     const runner = getScanRunners(socket);
-    const scanner = await runner.onShareDirectoryAdded(hookData, accept, reject);
+    const scanner = await runner.onShareDirectoryAdded(false, hookData, accept, reject);
 
     expect(reject.mock.calls.length).toBe(1);
     expect(accept.mock.calls.length).toBe(0);
@@ -109,7 +109,7 @@ describe('Scan runner', () => {
     const accept = jest.fn();
 
     const runner = getScanRunners(socket, true);
-    const scanner = await runner.onShareDirectoryAdded(hookData, accept, reject);
+    const scanner = await runner.onShareDirectoryAdded(false, hookData, accept, reject);
 
     expect(reject.mock.calls.length).toBe(0);
     expect(accept.mock.calls.length).toBe(1);
@@ -149,7 +149,7 @@ describe('Scan runner', () => {
     const accept = jest.fn();
 
     const runner = getScanRunners(socket, true);
-    const scanner = await runner.onShareDirectoryAdded(hookData, accept, reject);
+    const scanner = await runner.onShareDirectoryAdded(false, hookData, accept, reject);
 
     expect(reject.mock.calls.length).toBe(0);
     expect(accept.mock.calls.length).toBe(1);

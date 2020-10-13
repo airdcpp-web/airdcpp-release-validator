@@ -120,22 +120,25 @@ const ScanRunners = function (socket, extensionName, configGetter) {
   };
 
   // Scan new share directories
-  const onShareDirectoryAdded = async ({ path, new_parent }, accept, reject) => {
+  const onShareDirectoryAdded = async (logErrors, { path, new_parent }, accept, reject) => {
     // Scan it
-    const scanner = Scanner(configGetter().validators, errorLogger, pathValidator(false));
+    const scanner = Scanner(configGetter().validators, () => {}, pathValidator(false));
     await scanner.scanPath(path, false);
 
     logCompleted(scanner, 'New share directory scan completed');
     if (scanner.errors.count()) {
       // Failed, report and reject
+
+      const errorMessage = `Following problems were found while scanning the share directory ${path}: ${scanner.errors.format()}`;
+      if (logErrors) {
+        postEvent(
+          errorMessage, 
+          'error'
+        );
+      }
+
       const error = scanner.errors.pickOne();
-
-      postEvent(
-        `Following problems were found while scanning the share directory ${path}: ${scanner.errors.format()}`, 
-        'error'
-      );
-
-      reject(error.id, error.message);
+      reject(error.id, errorMessage);
     } else {
       accept();
     }
