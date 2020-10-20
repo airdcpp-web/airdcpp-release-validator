@@ -1,8 +1,9 @@
-### Version 1.1.0 (2020-09-xx)
+### Version 1.1.0 (2020-10-20)
 
 - Add an option for ignoring files/directories that are excluded from share (disabled by default)
 - Fix share roots not being scanned recursively
 - Log scan duration in the extension log file
+- Fix a crash if reading of file/directory properties fails
 
 ### Version 1.0.0 (2020-07-11)
 
