@@ -1,3 +1,7 @@
+### Version 1.1.1 (2020-11-02)
+
+- Return more generic error IDs for hook rejections (files_missing, extra_files, invalid_content)
+
 ### Version 1.1.0 (2020-10-20)
 
 - Add an option for ignoring files/directories that are excluded from share (disabled by default)

@@ -1,6 +1,6 @@
 {
   "name": "airdcpp-release-validator",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Scan downloaded and shared release directories for missing/extra files",
   "license": "MIT",
   "author": {
@@ -42,7 +42,7 @@
     "eol": "^0.9.0",
     "eslint": "^7.12.1",
     "eslint-config-prettier": "^6.15.0",
-    "jest-cli": "^26.6.1",
+    "jest-cli": "^26.6.2",
     "nodemon": "^2.0.6",
     "prettier": "^2.1.2",
     "rimraf": "^3.0.2",
@@ -55,6 +55,9 @@
     "apiVersion": 1,
     "minApiFeatureLevel": 4
   },
+  "pre-commit": [
+    "test"
+  ],
   "jest": {
     "coverageDirectory": "./coverage/",
     "coveragePathIgnorePatterns": [
