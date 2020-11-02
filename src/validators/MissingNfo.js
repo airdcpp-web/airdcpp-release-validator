@@ -46,7 +46,7 @@ const validate = async (directory, reporter) => {
     }
 
     if (!found) {
-      reporter.addFolder(directory.path, 'nfo_missing', 'NFO file possibly missing', ErrorType.FILES_MISSING);
+      reporter.addFolder(directory.path, 'nfo_missing', 'NFO file possibly missing', ErrorType.ITEMS_MISSING);
     }
   }
 };

@@ -2,8 +2,8 @@ import invariant from 'invariant';
 
 
 export const ErrorType = {
-  FILES_MISSING: 'files_missing',
-  EXTRA_FILES: 'extra_files',
+  ITEMS_MISSING: 'items_missing',
+  EXTRA_ITEMS: 'extra_items',
   INVALID_CONTENT: 'invalid_content',
 };
 
@@ -127,7 +127,7 @@ export const TotalErrorCounter = () => {
   const pickOne = () => {
     // Prefer missing errors because of auto search
     {
-      const error = getHookError(ErrorType.FILES_MISSING);
+      const error = getHookError(ErrorType.ITEMS_MISSING);
       if (!!error) {
         return error;
       }
@@ -135,7 +135,7 @@ export const TotalErrorCounter = () => {
 
     // Only extra files?
     {
-      const error = getError(ErrorType.EXTRA_FILES);
+      const error = getHookError(ErrorType.EXTRA_ITEMS);
       if (!!error) {
         return error;
       }

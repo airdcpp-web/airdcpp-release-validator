@@ -25,7 +25,7 @@ const isSfvDirectory = directory => {
 const validate = async (directory, reporter) => {
   // SFV files may also be inside subdirectory (directory name detection can't be used)
   if (!directory.sfvFiles.length && isSfvDirectory(directory)) {
-    reporter.addFolder(directory.path, 'sfv_missing', 'SFV file possibly missing', ErrorType.FILES_MISSING);
+    reporter.addFolder(directory.path, 'sfv_missing', 'SFV file possibly missing', ErrorType.ITEMS_MISSING);
   }
 };
 

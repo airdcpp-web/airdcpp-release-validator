@@ -28,19 +28,19 @@ describe('Error collector', () => {
       'mock_file1',
       'files_missing1',
       'File missing',
-      ErrorType.FILES_MISSING
+      ErrorType.ITEMS_MISSING
     );
     validatorErrors.addFile(
       'mock_file2',
       'files_missing2',
       'File missing',
-      ErrorType.FILES_MISSING
+      ErrorType.ITEMS_MISSING
     );
 
     const error = totalCounter.pickOne();
     expect(error).toMatchInlineSnapshot(`
       Object {
-        "id": "files_missing",
+        "id": "items_missing",
         "message": "File missing",
       }
     `);
@@ -52,19 +52,19 @@ describe('Error collector', () => {
       'mock_file1',
       'files_extras1',
       'Extra file',
-      ErrorType.EXTRA_FILES
+      ErrorType.EXTRA_ITEMS
     );
     validatorErrors.addFile(
       'mock_file2',
       'files_extras2',
       'Extra file',
-      ErrorType.EXTRA_FILES
+      ErrorType.EXTRA_ITEMS
     );
 
     const error = totalCounter.pickOne();
     expect(error).toMatchInlineSnapshot(`
       Object {
-        "id": "extra_files",
+        "id": "extra_items",
         "message": "Extra file",
       }
     `);
@@ -76,13 +76,13 @@ describe('Error collector', () => {
       'mock_file1',
       'files_missing1',
       'File missing',
-      ErrorType.FILES_MISSING
+      ErrorType.ITEMS_MISSING
     );
     validatorErrors.addFile(
       'mock_file2',
       'files_extras2',
       'Extra file',
-      ErrorType.EXTRA_FILES
+      ErrorType.EXTRA_ITEMS
     );
 
     const error = totalCounter.pickOne();
