@@ -1,5 +1,12 @@
 import invariant from 'invariant';
 
+
+export const ErrorType = {
+  FILES_MISSING: 'files_missing',
+  EXTRA_FILES: 'extra_files',
+  INVALID_CONTENT: 'invalid_content',
+};
+
 export const ValidatorErrorReporter = (directoryInfo, totalErrors, logger) => {
   const validatorErrors = {};
 
@@ -36,14 +43,14 @@ export const ValidatorErrorReporter = (directoryInfo, totalErrors, logger) => {
     });
   };
 
-  const addFile = (fileName, errorId, message) => {
+  const addFile = (fileName, errorId, message, errorType) => {
     getError(errorId, message).files.push(fileName);
-    totalErrors.add(errorId, message);
+    totalErrors.add(errorId, message, errorType);
   };
 
-  const addFolder = (folderPath, errorId, message) => {
+  const addFolder = (folderPath, errorId, message, errorType) => {
     getError(errorId, message).hasFolderError = true;
-    totalErrors.add(errorId, message);
+    totalErrors.add(errorId, message, errorType);
   };
 
   return {
@@ -78,10 +85,11 @@ export const TotalErrorCounter = () => {
 
 
   // ADDING ERRORS
-  const add = (errorId, message) => {
+  const add = (errorId, message, errorType) => {
     errors[errorId] = errors[errorId] || {
       count: 0,
       message,
+      type: errorType,
     };
 
     errors[errorId].count++;
@@ -102,11 +110,41 @@ export const TotalErrorCounter = () => {
     }, 0);
   };
 
-  // Return a single error
+  // Return a hook rejection error when all errors have the wanted type
+  const getError = (errorType) => {
+    if (!errorType || Object.keys(errors).every(key => errors[key].errorType === errorType)) {
+      const id = Object.keys(errors)[0];
+      return {
+        id: errorType,
+        message: errors[id].message,
+      };
+    }
+
+    return null;
+  };
+
+  // Return a single hook rejection error
   const pickOne = () => {
+    // Prefer missing errors because of auto search
+    {
+      const error = getError(ErrorType.FILES_MISSING);
+      if (!!error) {
+        return error;
+      }
+    }
+
+    // Only extra files?
+    {
+      const error = getError(ErrorType.EXTRA_FILES);
+      if (!!error) {
+        return error;
+      }
+    }
+
+    // Return a generic error
     const id = Object.keys(errors)[0];
     return {
-      id,
+      id: ErrorType.INVALID_CONTENT,
       message: errors[id].message,
     };
   };

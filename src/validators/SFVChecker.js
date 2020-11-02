@@ -1,4 +1,5 @@
 import path from 'path';
+import { ErrorType } from '../ErrorCollector';
 import SFVReader from '../SFVReader';
  
  
@@ -45,7 +46,7 @@ const validate = async (directory, reporter) => {
       await reader.load(file);
       loadedSfvFiles++;
     } catch (e) {
-      reporter.addFile(file, 'invalid_sfv_file', e.message);
+      reporter.addFile(file, 'invalid_sfv_file', e.message, ErrorType.INVALID_CONTENT);
     }
   }));
 
@@ -60,7 +61,7 @@ const validate = async (directory, reporter) => {
 
     // Some (bad) SFV files also list NFO/SFV files... don't report them
     if (!files[fileLower] && !isSfvOrNfo(fileLower)) {
-      reporter.addFile(file, 'file_missing', 'File listed in the SFV file does not exist on disk');
+      reporter.addFile(file, 'file_missing', 'File listed in the SFV file does not exist on disk', ErrorType.FILES_MISSING);
     } else {
       delete files[fileLower];
     }
@@ -71,7 +72,7 @@ const validate = async (directory, reporter) => {
     const extrasReg = getExtrasReg(directory.name);
     Object.values(files).forEach(file => {
       if (!extrasReg.test(file)) {
-        reporter.addFile(file, 'extra_files', 'Extra files in release directory');
+        reporter.addFile(file, 'extra_files', 'Extra files in release directory', ErrorType.EXTRA_FILES);
       }
     });
   }

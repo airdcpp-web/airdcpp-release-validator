@@ -1,5 +1,6 @@
 import fs from 'async-file';
 import path from 'path';
+import { ErrorType } from '../ErrorCollector';
 
 import { isReleaseName } from './common';
 
@@ -45,7 +46,7 @@ const validate = async (directory, reporter) => {
     }
 
     if (!found) {
-      reporter.addFolder(directory.path, 'nfo_missing', 'NFO file possibly missing');
+      reporter.addFolder(directory.path, 'nfo_missing', 'NFO file possibly missing', ErrorType.FILES_MISSING);
     }
   }
 };
