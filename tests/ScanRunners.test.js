@@ -5,22 +5,17 @@ import validators from 'validators';
 
 describe('Scan runner', () => {
   const logger = {
-    verbose: _ => {},
-    info: _ => {},
-    warn: _ => {},
-    error: _ => {},
-  }
+    verbose: () => {},
+    info: () => {},
+    warn: () => {},
+    error: () => {},
+  };
 
   const getScanRunners = (socket, ignoreExcluded = false) => {
-    return ScanRunners(
-      socket, 
-      'test-extension',
-      () => ({
-        validators,
-        ignoreExcluded,
-      }),
-      
-    );
+    return ScanRunners(socket, 'test-extension', () => ({
+      validators,
+      ignoreExcluded,
+    }));
   };
 
   test('should reject invalid bundles', async () => {
@@ -35,7 +30,7 @@ describe('Scan runner', () => {
     };
 
     const socket = {
-      post: _ => {},
+      post: (_) => {},
       logger,
     };
 
@@ -46,6 +41,12 @@ describe('Scan runner', () => {
     const scanner = await runner.onBundleFinished(bundle, accept, reject);
 
     expect(reject.mock.calls.length).toBe(1);
+    expect(reject.mock.calls[0]).toMatchInlineSnapshot(`
+      Array [
+        "invalid_content",
+        "Extra files in release directory",
+      ]
+    `);
     expect(accept.mock.calls.length).toBe(0);
     expect(scanner.stats.scannedDirectories).toBe(2);
   });
@@ -59,7 +60,7 @@ describe('Scan runner', () => {
     };
 
     const socket = {
-      post: _ => {},
+      post: (_) => {},
       logger,
     };
 
@@ -67,9 +68,21 @@ describe('Scan runner', () => {
     const accept = jest.fn();
 
     const runner = getScanRunners(socket);
-    const scanner = await runner.onShareDirectoryAdded(false, hookData, accept, reject);
+    const scanner = await runner.onShareDirectoryAdded(
+      false,
+      hookData,
+      accept,
+      reject
+    );
 
     expect(reject.mock.calls.length).toBe(1);
+    expect(reject.mock.calls[0]).toMatchInlineSnapshot(`
+      Array [
+        "invalid_content",
+        "Following problems were found while scanning the share directory C:\\\\Projects\\\\airdcpp-release-validator\\\\tests\\\\data\\\\Test.Release-TEST: extra files in release directory (count: 1)",
+      ]
+    `);
+
     expect(accept.mock.calls.length).toBe(0);
     expect(scanner.stats.scannedDirectories).toBe(1); // Not recursive
   });
@@ -86,9 +99,11 @@ describe('Scan runner', () => {
         }
 
         if (url.startsWith('share')) {
-
           // Share validator
-          if (data.path.endsWith('Sample' + path.sep) || data.path.endsWith('forbidden_extra.zip')) {
+          if (
+            data.path.endsWith('Sample' + path.sep) ||
+            data.path.endsWith('forbidden_extra.zip')
+          ) {
             ignoredPathFn(url, data);
             throw Error('Ignored');
           }
@@ -104,19 +119,22 @@ describe('Scan runner', () => {
       new_parent: false,
     };
 
-    
     const reject = jest.fn();
     const accept = jest.fn();
 
     const runner = getScanRunners(socket, true);
-    const scanner = await runner.onShareDirectoryAdded(false, hookData, accept, reject);
+    const scanner = await runner.onShareDirectoryAdded(
+      false,
+      hookData,
+      accept,
+      reject
+    );
 
     expect(reject.mock.calls.length).toBe(0);
     expect(accept.mock.calls.length).toBe(1);
     expect(ignoredPathFn.mock.calls.length).toBe(2);
     expect(scanner.stats.scannedDirectories).toBe(1);
   });
-
 
   test('should not proceed if all files in the directory are excluded', async () => {
     const scanPath = path.join(__dirname, 'data/Test.Release-TEST');
@@ -144,12 +162,17 @@ describe('Scan runner', () => {
       path: scanPath,
       new_parent: false,
     };
-    
+
     const reject = jest.fn();
     const accept = jest.fn();
 
     const runner = getScanRunners(socket, true);
-    const scanner = await runner.onShareDirectoryAdded(false, hookData, accept, reject);
+    const scanner = await runner.onShareDirectoryAdded(
+      false,
+      hookData,
+      accept,
+      reject
+    );
 
     expect(reject.mock.calls.length).toBe(0);
     expect(accept.mock.calls.length).toBe(1);
@@ -166,13 +189,13 @@ describe('Scan runner', () => {
     };
 
     const socket = {
-      post: _ => {},
-      get: _ => Promise.resolve(shareRootInfo),
+      post: () => {},
+      get: () => Promise.resolve(shareRootInfo),
       logger,
     };
 
     const runner = getScanRunners(socket);
-    const scanner = await runner.scanShareRoots([ 1 ]);
+    const scanner = await runner.scanShareRoots([1]);
 
     expect(scanner.errors.count() > 0).toBe(true);
     expect(scanner.stats.scannedDirectories).toBe(2);
@@ -182,13 +205,13 @@ describe('Scan runner', () => {
     const sharePaths = [
       {
         name: 'VNAME',
-        paths: [ path.join(__dirname, 'data/Test.Release-TEST') ],
-      }
+        paths: [path.join(__dirname, 'data/Test.Release-TEST')],
+      },
     ];
 
     const socket = {
-      post: _ => {},
-      get: _ => Promise.resolve(sharePaths),
+      post: () => {},
+      get: () => Promise.resolve(sharePaths),
       logger,
     };
 
@@ -202,13 +225,13 @@ describe('Scan runner', () => {
     const sharePaths = [
       {
         name: 'VNAME',
-        paths: [ path.join(__dirname, 'nonexistingdirectory') ],
-      }
+        paths: [path.join(__dirname, 'nonexistingdirectory')],
+      },
     ];
 
     const socket = {
-      post: _ => {},
-      get: _ => Promise.resolve(sharePaths),
+      post: () => {},
+      get: () => Promise.resolve(sharePaths),
       logger,
     };
 

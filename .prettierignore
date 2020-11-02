@@ -1,0 +1,5 @@
+dist
+devtools
+.vscode
+coverage
+node_modules
