@@ -7,7 +7,7 @@ export const ErrorType = {
   INVALID_CONTENT: 'invalid_content',
 };
 
-export const ValidatorErrorReporter = (directoryInfo, totalErrors, logger) => {
+export const ValidatorErrorReporter = (directoryInfo, totalErrors, errorLogger) => {
   const validatorErrors = {};
 
   const reduceMessage = (reducedText, fileName, index) => {
@@ -34,11 +34,11 @@ export const ValidatorErrorReporter = (directoryInfo, totalErrors, logger) => {
 
       if (error.files.length) {
         const itemListStr = error.files.reduce(reduceMessage, '');
-        logger(`${directoryInfo.path}: ${error.message} (${error.files.length} file(s): ${itemListStr})`);
+        errorLogger(`${directoryInfo.path}: ${error.message} (${error.files.length} file(s): ${itemListStr})`);
       }
 
       if (error.hasFolderError) {
-        logger(`${directoryInfo.path}: ${error.message}`);
+        errorLogger(`${directoryInfo.path}: ${error.message}`);
       }
     });
   };
@@ -111,7 +111,7 @@ export const TotalErrorCounter = () => {
   };
 
   // Return a hook rejection error when all errors have the wanted type
-  const getError = (errorType) => {
+  const getHookError = (errorType) => {
     if (Object.keys(errors).every(key => errors[key].type === errorType)) {
       const id = Object.keys(errors)[0];
       return {
@@ -127,7 +127,7 @@ export const TotalErrorCounter = () => {
   const pickOne = () => {
     // Prefer missing errors because of auto search
     {
-      const error = getError(ErrorType.FILES_MISSING);
+      const error = getHookError(ErrorType.FILES_MISSING);
       if (!!error) {
         return error;
       }

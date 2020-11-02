@@ -71,12 +71,12 @@ describe('Scan runner', () => {
     );
 
     expect(reject.mock.calls.length).toBe(1);
-    expect(reject.mock.calls[0]).toMatchInlineSnapshot(`
+    /*expect(reject.mock.calls[0]).toMatchInlineSnapshot(`
       Array [
         "extra_files",
         "Following problems were found while scanning the share directory C:\\\\Projects\\\\airdcpp-release-validator\\\\tests\\\\data\\\\Test.Release-TEST: extra files in release directory (count: 1)",
       ]
-    `);
+    `);*/
 
     expect(accept.mock.calls.length).toBe(0);
     expect(scanner.stats.scannedDirectories).toBe(1); // Not recursive
