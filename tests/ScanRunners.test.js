@@ -3,14 +3,9 @@ import path from 'path';
 
 import validators from 'validators';
 
-describe('Scan runner', () => {
-  const logger = {
-    verbose: () => {},
-    info: () => {},
-    warn: () => {},
-    error: () => {},
-  };
+import { MockLogger as logger } from './helpers';
 
+describe('Scan runner', () => {
   const getScanRunners = (socket, ignoreExcluded = false) => {
     return ScanRunners(socket, 'test-extension', () => ({
       validators,
@@ -78,7 +73,7 @@ describe('Scan runner', () => {
     expect(reject.mock.calls.length).toBe(1);
     expect(reject.mock.calls[0]).toMatchInlineSnapshot(`
       Array [
-        "invalid_content",
+        "extra_files",
         "Following problems were found while scanning the share directory C:\\\\Projects\\\\airdcpp-release-validator\\\\tests\\\\data\\\\Test.Release-TEST: extra files in release directory (count: 1)",
       ]
     `);

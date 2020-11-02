@@ -112,7 +112,7 @@ export const TotalErrorCounter = () => {
 
   // Return a hook rejection error when all errors have the wanted type
   const getError = (errorType) => {
-    if (!errorType || Object.keys(errors).every(key => errors[key].errorType === errorType)) {
+    if (Object.keys(errors).every(key => errors[key].type === errorType)) {
       const id = Object.keys(errors)[0];
       return {
         id: errorType,
