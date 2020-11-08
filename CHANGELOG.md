@@ -1,3 +1,7 @@
+### Version 1.1.2 (2020-11-08)
+
+- Run validations for non-shared bundles on startup to avoid them from being added in share (requires Web Client 2.10.0 or newer)
+
 ### Version 1.1.1 (2020-11-02)
 
 - Return more generic error IDs for hook rejections (files_missing, extra_files, invalid_content)
