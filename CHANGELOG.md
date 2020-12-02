@@ -1,3 +1,10 @@
+### Version 1.1.3 (2020-12-02)
+
+- Show better rejection message for new share directories
+- Log maximum of 25 missing file names for each directory
+- Update the repository URL
+- Internal: migrate the project to TypeScript
+
 ### Version 1.1.2 (2020-11-08)
 
 - Run validations for non-shared bundles on startup to avoid them from being added in share (requires Web Client 2.10.0 or newer)
