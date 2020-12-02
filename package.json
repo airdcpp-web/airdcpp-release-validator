@@ -11,10 +11,10 @@
     "airdcpp-extensions",
     "airdcpp-extensions-public"
   ],
-  "bugs": "https://github.com/maksis/airdcpp-release-validator/issues/",
+  "bugs": "https://github.com/airdcpp-web/airdcpp-release-validator/issues/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/maksis/airdcpp-release-validator"
+    "url": "https://github.com/airdcpp-web/airdcpp-release-validator"
   },
   "scripts": {
     "build": "npm run clean && npm run webpack:prod",
