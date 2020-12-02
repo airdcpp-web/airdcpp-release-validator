@@ -120,7 +120,8 @@ export default function (socket: APISocket, extension: ExtensionEntryData) {
     
     if (settings.getValue('scan_new_share_directories')) {
       // Starting from feature level 5, the application will handle error reporting
-      const onShareDirectoryAdded = runners.getShareDirectoryAddedHandler(sessionInfo.system_info.api_feature_level <= 4);
+      const postEventLog = sessionInfo.system_info.api_feature_level <= 4;
+      const onShareDirectoryAdded = runners.getShareDirectoryAddedHandler(postEventLog);
       await socket.addHook('share', 'new_share_directory_validation_hook', onShareDirectoryAdded, subscriberInfo);
     }
     

@@ -12,12 +12,28 @@ interface TotalErrorReporter {
   add: (errorId: string, message: string, errorType: ErrorType) => void;
 }
 
+
+const reduceFilesMessage = (reducedText: string, fileName: string, index: number) => {
+  return reducedText + (index !== 0 ? ', ' : '') + fileName;
+};
+
+const toErrorMessage = (error: ErrorInfo) => {
+  let messageStr = `${error.message} (${error.files.length} file(s)`;
+  if (error.files.length < 25) {
+    // List all files
+    messageStr += error.files.reduce(reduceFilesMessage, '');
+  } else {
+    // List the first 20 files (there can hundreds of them)
+    messageStr += error.files.slice(0, 20).reduce(reduceFilesMessage, '');
+    messageStr += ` and ${error.files.length - 20} more`;
+  }
+
+  messageStr += ')';
+  return messageStr;
+}
+
 export const ValidatorErrorReporter = (directoryInfo: DirectoryInfo, totalErrors: TotalErrorReporter, errorLogger: ErrorLogger) => {
   const validatorErrors: { [key in string]: ErrorInfo } = {};
-
-  const reduceMessage = (reducedText: string, fileName: string, index: number) => {
-    return reducedText + (index !== 0 ? ', ' : '') + fileName;
-  };
 
   // Initialize a new error object or return an existing one
   const getError = (errorId: string, message: string) => {
@@ -38,12 +54,12 @@ export const ValidatorErrorReporter = (directoryInfo: DirectoryInfo, totalErrors
       const error = validatorErrors[id];
 
       if (error.files.length) {
-        const itemListStr = error.files.reduce(reduceMessage, '');
-        errorLogger(`${directoryInfo.path}: ${error.message} (${error.files.length} file(s): ${itemListStr})`);
+        const message = toErrorMessage(error);
+        errorLogger(directoryInfo.path, message);
       }
 
       if (error.hasFolderError) {
-        errorLogger(`${directoryInfo.path}: ${error.message}`);
+        errorLogger(directoryInfo.path, error.message);
       }
     });
   };

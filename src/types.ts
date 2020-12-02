@@ -12,7 +12,7 @@ export interface ErrorReporter {
   addFile: ErrorCallback;
 }
 
-export type ErrorLogger = (message: string) => void;
+export type ErrorLogger = (path: string, message: string) => void;
 
 
 // VALIDATORS

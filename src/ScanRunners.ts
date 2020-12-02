@@ -2,6 +2,7 @@ import Scanner from './Scanner';
 
 import { APISocket, HookCallback } from 'airdcpp-apisocket';
 import { Bundle, GroupedPath, SharePathHookData, ShareRoot, SeverityEnum, Validator } from './types';
+import { getApiErrorLogger, MemoryErrorLogger } from 'errors/ErrorLogger';
 
 
 interface Config {
@@ -26,7 +27,7 @@ const ScanRunners = function (socket: APISocket, extensionName: string, configGe
   };
 
   // Log extension info (debug) message after the scan was completed
-  const logCompleted = (scanner: ReturnType<typeof Scanner>, message: string) => {
+  const logCompletedDebug = (scanner: ReturnType<typeof Scanner>, message: string) => {
     let text = message;
     text += `: scanned ${scanner.stats.scannedDirectories} directories and ${scanner.stats.scannedFiles} files, took ${scanner.stats.duration} ms`;
     text += ` (${(scanner.stats.duration / scanner.stats.scannedDirectories).toFixed(2)} ms per directory, ${(scanner.stats.duration / scanner.stats.scannedFiles).toFixed(2)} ms per file)`;
@@ -59,10 +60,7 @@ const ScanRunners = function (socket: APISocket, extensionName: string, configGe
     return validate;
   };
 
-  const errorLogger = (message: string) => {
-    // TODO: add file logger support
-    postEvent(message, SeverityEnum.WARNING);
-  };
+  const ApiErrorLogger = getApiErrorLogger(postEvent);
 
   const onManualScanCompleted = (scanner: ReturnType<typeof Scanner>) => {
     let text;
@@ -72,7 +70,7 @@ const ScanRunners = function (socket: APISocket, extensionName: string, configGe
       text = 'Scan completed, no problems were found';
     }
 
-    logCompleted(scanner, `Manual scan completed with maximum concurrency of ${scanner.stats.maxRunning}`);
+    logCompletedDebug(scanner, `Manual scan completed with maximum concurrency of ${scanner.stats.maxRunning}`);
     postEvent(text, scanner.errors.count() ? SeverityEnum.WARNING : SeverityEnum.INFO);
   };
 
@@ -81,7 +79,7 @@ const ScanRunners = function (socket: APISocket, extensionName: string, configGe
     const text = paths.length === 1 ? `Scanning the path ${paths[0]}...` : `Scanning ${paths.length} paths...`;
     postEvent(text, SeverityEnum.INFO);
 
-    const scanner = Scanner(configGetter().validators, errorLogger, pathValidator(false));
+    const scanner = Scanner(configGetter().validators, ApiErrorLogger, pathValidator(false));
     await scanner.scanPaths(paths);
     onManualScanCompleted(scanner);
     
@@ -93,7 +91,7 @@ const ScanRunners = function (socket: APISocket, extensionName: string, configGe
     const directories = await socket.get<GroupedPath[]>('share/grouped_root_paths');
 
     postEvent('Scanning shared releases...', SeverityEnum.INFO);
-    const scanner = Scanner(configGetter().validators, errorLogger, pathValidator(false));
+    const scanner = Scanner(configGetter().validators, ApiErrorLogger, pathValidator(false));
     await scanner.scanPaths(directories.reduce(reduceGroupedPath, []));
     onManualScanCompleted(scanner);
 
@@ -108,10 +106,10 @@ const ScanRunners = function (socket: APISocket, extensionName: string, configGe
     }
 
     // Scan it
-    const scanner = Scanner(configGetter().validators, errorLogger, pathValidator(true));
+    const scanner = Scanner(configGetter().validators, ApiErrorLogger, pathValidator(true));
     await scanner.scanPath(bundle.target);
 
-    logCompleted(scanner, 'Bundle scan completed');
+    logCompletedDebug(scanner, 'Bundle scan completed');
     if (scanner.errors.count()) {
       // Failed, report and reject
       const error = scanner.errors.pickOne();
@@ -130,18 +128,19 @@ const ScanRunners = function (socket: APISocket, extensionName: string, configGe
   };
 
   // Scan new share directories
-  const getShareDirectoryAddedHandler = (logErrors: boolean) => {
+  const getShareDirectoryAddedHandler = (postEventApi: boolean) => {
     const onShareDirectoryAdded: HookCallback<SharePathHookData> = async ({ path, new_parent }, accept, reject) => {
       // Scan it
-      const scanner = Scanner(configGetter().validators, () => {}, pathValidator(false));
+      const errorLogger = MemoryErrorLogger();
+
+      const scanner = Scanner(configGetter().validators, errorLogger.logger, pathValidator(false));
       await scanner.scanPath(path, false);
 
-      logCompleted(scanner, 'New share directory scan completed');
+      logCompletedDebug(scanner, 'New share directory scan completed');
       if (scanner.errors.count()) {
         // Failed, report and reject
-
-        const errorMessage = `Following problems were found while scanning the share directory ${path}: ${scanner.errors.format()}`;
-        if (logErrors) {
+        if (postEventApi) {
+          const errorMessage = `Following problems were found while scanning the share directory ${path}: ${scanner.errors.format()}`;
           postEvent(
             errorMessage, 
             SeverityEnum.ERROR
@@ -149,7 +148,7 @@ const ScanRunners = function (socket: APISocket, extensionName: string, configGe
         }
 
         const error = scanner.errors.pickOne();
-        reject(error.id, errorMessage);
+        reject(error.id, errorLogger.getLog());
       } else {
         accept(undefined);
       }
