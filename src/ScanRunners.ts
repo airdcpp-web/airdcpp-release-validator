@@ -1,14 +1,24 @@
 import Scanner from './Scanner';
 
+import { APISocket, HookCallback } from 'airdcpp-apisocket';
+import { Bundle, GroupedPath, SharePathHookData, ShareRoot, SeverityEnum, Validator } from './types';
+
+
+interface Config {
+  ignoreExcluded: boolean;
+  validators: Validator[];
+}
+
+type ConfigGetter = () => Config;
 
 // Scan initiators
-const ScanRunners = function (socket, extensionName, configGetter) {
-  const reduceGroupedPath = (reduced, info) => {
+const ScanRunners = function (socket: APISocket, extensionName: string, configGetter: ConfigGetter) {
+  const reduceGroupedPath = (reduced: string[], info: GroupedPath) => {
     reduced.push(...info.paths);
     return reduced;
   };
 
-  const postEvent = (message, severity) => {
+  const postEvent = (message: string, severity: SeverityEnum) => {
     socket.post('events', {
       text: `[${extensionName}] ${message}`,
       severity,
@@ -16,7 +26,7 @@ const ScanRunners = function (socket, extensionName, configGetter) {
   };
 
   // Log extension info (debug) message after the scan was completed
-  const logCompleted = (scanner, message) => {
+  const logCompleted = (scanner: ReturnType<typeof Scanner>, message: string) => {
     let text = message;
     text += `: scanned ${scanner.stats.scannedDirectories} directories and ${scanner.stats.scannedFiles} files, took ${scanner.stats.duration} ms`;
     text += ` (${(scanner.stats.duration / scanner.stats.scannedDirectories).toFixed(2)} ms per directory, ${(scanner.stats.duration / scanner.stats.scannedFiles).toFixed(2)} ms per file)`;
@@ -27,12 +37,12 @@ const ScanRunners = function (socket, extensionName, configGetter) {
     socket.logger.info(text);
   };
 
-  const pathValidator = (skipQueueCheck) => {
+  const pathValidator = (skipQueueCheck: boolean) => {
     if (!configGetter().ignoreExcluded) {
       return () => true;
     }
 
-    const validate = async (path) => {
+    const validate = async (path: string) => {
       try {
         await socket.post('share/validate_path', {
           path,
@@ -49,12 +59,12 @@ const ScanRunners = function (socket, extensionName, configGetter) {
     return validate;
   };
 
-  const errorLogger = message => {
+  const errorLogger = (message: string) => {
     // TODO: add file logger support
-    postEvent(message, 'warning');
+    postEvent(message, SeverityEnum.WARNING);
   };
 
-  const onManualScanCompleted = (scanner) => {
+  const onManualScanCompleted = (scanner: ReturnType<typeof Scanner>) => {
     let text;
     if (scanner.errors.count()) {
       text = `Scan completed and the following problems were found: ${scanner.errors.format()}`;
@@ -63,13 +73,13 @@ const ScanRunners = function (socket, extensionName, configGetter) {
     }
 
     logCompleted(scanner, `Manual scan completed with maximum concurrency of ${scanner.stats.maxRunning}`);
-    postEvent(text, scanner.errors.count() ? 'warning' : 'info');
+    postEvent(text, scanner.errors.count() ? SeverityEnum.WARNING : SeverityEnum.INFO);
   };
 
   // Scan selected paths
-  const scanPaths = async (paths) => {
+  const scanPaths = async (paths: string[]) => {
     const text = paths.length === 1 ? `Scanning the path ${paths[0]}...` : `Scanning ${paths.length} paths...`;
-    postEvent(text, 'info');
+    postEvent(text, SeverityEnum.INFO);
 
     const scanner = Scanner(configGetter().validators, errorLogger, pathValidator(false));
     await scanner.scanPaths(paths);
@@ -80,9 +90,9 @@ const ScanRunners = function (socket, extensionName, configGetter) {
 
   // Scan entire share
   const scanShare = async () => {
-    const directories = await socket.get('share/grouped_root_paths');
+    const directories = await socket.get<GroupedPath[]>('share/grouped_root_paths');
 
-    postEvent('Scanning shared releases...', 'info');
+    postEvent('Scanning shared releases...', SeverityEnum.INFO);
     const scanner = Scanner(configGetter().validators, errorLogger, pathValidator(false));
     await scanner.scanPaths(directories.reduce(reduceGroupedPath, []));
     onManualScanCompleted(scanner);
@@ -91,9 +101,9 @@ const ScanRunners = function (socket, extensionName, configGetter) {
   };
 
   // Scan a finished bundle
-  const onBundleFinished = async (bundle, accept, reject) => {
+  const onBundleFinished: HookCallback<Bundle> = async (bundle, accept, reject) => {
     if (bundle.type.id === 'file') {
-      accept();
+      accept(undefined);
       return null;
     }
 
@@ -108,49 +118,53 @@ const ScanRunners = function (socket, extensionName, configGetter) {
 
       postEvent(
         `Following problems were found while scanning the bundle ${bundle.name}: ${scanner.errors.format()}`, 
-        'error'
+        SeverityEnum.ERROR
       );
 
       reject(error.id, error.message);
     } else {
-      accept();
+      accept(undefined);
     }
 
     return scanner;
   };
 
   // Scan new share directories
-  const onShareDirectoryAdded = async (logErrors, { path, new_parent }, accept, reject) => {
-    // Scan it
-    const scanner = Scanner(configGetter().validators, () => {}, pathValidator(false));
-    await scanner.scanPath(path, false);
+  const getShareDirectoryAddedHandler = (logErrors: boolean) => {
+    const onShareDirectoryAdded: HookCallback<SharePathHookData> = async ({ path, new_parent }, accept, reject) => {
+      // Scan it
+      const scanner = Scanner(configGetter().validators, () => {}, pathValidator(false));
+      await scanner.scanPath(path, false);
 
-    logCompleted(scanner, 'New share directory scan completed');
-    if (scanner.errors.count()) {
-      // Failed, report and reject
+      logCompleted(scanner, 'New share directory scan completed');
+      if (scanner.errors.count()) {
+        // Failed, report and reject
 
-      const errorMessage = `Following problems were found while scanning the share directory ${path}: ${scanner.errors.format()}`;
-      if (logErrors) {
-        postEvent(
-          errorMessage, 
-          'error'
-        );
+        const errorMessage = `Following problems were found while scanning the share directory ${path}: ${scanner.errors.format()}`;
+        if (logErrors) {
+          postEvent(
+            errorMessage, 
+            SeverityEnum.ERROR
+          );
+        }
+
+        const error = scanner.errors.pickOne();
+        reject(error.id, errorMessage);
+      } else {
+        accept(undefined);
       }
 
-      const error = scanner.errors.pickOne();
-      reject(error.id, errorMessage);
-    } else {
-      accept();
-    }
+      return scanner;
+    };
 
-    return scanner;
+    return onShareDirectoryAdded;
   };
 
-  const scanShareRoots = async (ids) => {
+  const scanShareRoots = async (ids: string[]) => {
     const paths = [];
     for (const id of ids) {
       try {
-        const shareRoot = await socket.get(`share_roots/${id}`);
+        const shareRoot = await socket.get<ShareRoot>(`share_roots/${id}`);
         paths.push(shareRoot.path);
       } catch (e) {
         socket.logger.info(`Failed to fetch share root information: ${e} (id ${id})`);
@@ -169,7 +183,7 @@ const ScanRunners = function (socket, extensionName, configGetter) {
     scanPaths,
     scanShareRoots,
     onBundleFinished,
-    onShareDirectoryAdded,
+    getShareDirectoryAddedHandler,
     stop,
   };
 };

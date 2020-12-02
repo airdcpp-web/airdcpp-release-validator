@@ -21,18 +21,22 @@ const SettingDefinitions = [
 
 const CONFIG_VERSION = 1;
 
-import { addContextMenuItems } from 'airdcpp-apisocket';
+import { addContextMenuItems, APISocket } from 'airdcpp-apisocket';
+import { ExtensionEntryData } from 'airdcpp-extension';
+//@ts-ignore
 import SettingsManager from 'airdcpp-extension-settings';
 import ScanRunners from './ScanRunners';
+import { ChatCommandData, SessionInfo } from './types';
 import validators from './validators';
+
 
 const SCAN_ACCESS = 'settings_edit';
 
-const hasScanAccess = (permissions) => {
+const hasScanAccess = (permissions: string[]) => {
   return permissions.indexOf('admin') !== -1 || permissions.indexOf(SCAN_ACCESS) !== -1;
 };
 
-export default function (socket, extension) {
+export default function (socket: APISocket, extension: ExtensionEntryData) {
   // INITIALIZATION
   const settings = SettingsManager(socket, {
     extensionName: extension.name, 
@@ -44,28 +48,27 @@ export default function (socket, extension) {
     ],
   });
 
-  const validatorEnabled = ({ setting }) => {
+  const validatorEnabled = ({ setting }: any) => {
     return !setting || settings.getValue(setting.key);
   };
 
-  let runners;
+  let runners: ReturnType<typeof ScanRunners>;
 
   // EXTENSION LIFECYCLE
-  extension.onStart = async (sessionInfo) => {
+  extension.onStart = async (sessionInfo: SessionInfo) => {
     await settings.load();
 
     runners = ScanRunners(
       socket, 
       extension.name,
-      _ => ({
+      () => ({
         ignoreExcluded: settings.getValue('ignore_excluded'),
         validators: validators.filter(validatorEnabled),
       })
     );
-  
-  
+
     // CHAT COMMANDS
-    const checkChatCommand = (data) => {
+    const checkChatCommand = (data: ChatCommandData) => {
       const { command, args, permissions } = data;
       if (!hasScanAccess(permissions)) {
         return null;
@@ -96,7 +99,7 @@ export default function (socket, extension) {
       return null;
     };
   
-    const onChatCommand = (type, data, entityId) => {
+    const onChatCommand = (type: 'hub' | 'private_chat', data: ChatCommandData, entityId: string | number) => {
       const statusMessage = checkChatCommand(data);
       if (statusMessage) {
         socket.post(`${type}/${entityId}/status_message`, {
@@ -117,11 +120,12 @@ export default function (socket, extension) {
     
     if (settings.getValue('scan_new_share_directories')) {
       // Starting from feature level 5, the application will handle error reporting
-      await socket.addHook('share', 'new_share_directory_validation_hook', runners.onShareDirectoryAdded.bind(this, sessionInfo.system_info.api_feature_level <= 4), subscriberInfo);
+      const onShareDirectoryAdded = runners.getShareDirectoryAddedHandler(sessionInfo.system_info.api_feature_level <= 4);
+      await socket.addHook('share', 'new_share_directory_validation_hook', onShareDirectoryAdded, subscriberInfo);
     }
     
-    await socket.addListener('hubs', 'hub_text_command', onChatCommand.bind(this, 'hubs'));
-    await socket.addListener('private_chat', 'private_chat_text_command', onChatCommand.bind(this, 'private_chat'));
+    await socket.addListener('hubs', 'hub_text_command', onChatCommand.bind(null, 'hubs'));
+    await socket.addListener('private_chat', 'private_chat_text_command', onChatCommand.bind(null, 'private_chat'));
 
     addContextMenuItems(
       socket,

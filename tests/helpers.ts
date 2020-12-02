@@ -1,11 +1,12 @@
+import { Validator } from 'types';
 import Scanner from '../src/Scanner';
 
 
-export const MockErrorLogger = error => {
+export const MockErrorLogger = (error: string) => {
   // console.log(error),
 };
 
-export const getTestScanner = (validators) => {
+export const getTestScanner = (validators: Validator[]) => {
   return Scanner(
     validators,
     MockErrorLogger,

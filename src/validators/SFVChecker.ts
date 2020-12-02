@@ -1,6 +1,6 @@
 import path from 'path';
-import { ErrorType } from '../ErrorCollector';
 import SFVReader from '../SFVReader';
+import { ErrorType, Validate, ValidateCondition } from '../types';
  
  
 const audioBookExtrasReg = /^(.+\.(jp(e)?g|png|m3u|cue|zip|sfv|nfo))$/i;
@@ -12,7 +12,7 @@ const flacReg = /^(.+(-|\()(LOSSLESS|FLAC)((-|\)).+)?)$/i;
  
  
 // Get regex for allowed extra files (type is detected from the directory name)
-const getExtrasReg = (name) => {
+const getExtrasReg = (name: string) => {
   if (audioBookReg.test(name)) {
     return audioBookExtrasReg;
   } else if (flacReg.test(name)) {
@@ -22,18 +22,18 @@ const getExtrasReg = (name) => {
   return normalExtrasReg;
 };
  
-const validateCondition = directory => directory.sfvFiles.length;
+const validateCondition: ValidateCondition = directory => !!directory.sfvFiles.length;
 
-const isSfvOrNfo = (name) => {
+const isSfvOrNfo = (name: string) => {
   const ext = path.extname(name);
   return ext === '.nfo' || ext === '.sfv';
 };
  
-const validate = async (directory, reporter) => {
+const validate: Validate = async (directory, reporter) => {
   // Name comparisons should be case insensitive
   // as wrong case sizing in SFV files is rather common
   // Keep the original names available for reporting
-  const files = {};
+  const files: { [key in string]: string } = {};
   directory.files.forEach(name => files[name.toLowerCase()] = name);
 
 

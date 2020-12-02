@@ -1,20 +1,20 @@
 import fs from 'async-file';
 import path from 'path';
-import { ErrorType } from '../ErrorCollector';
+import { DirectoryInfo, ErrorType, Validate, ValidateCondition } from '../types';
 
 import { isReleaseName } from './common';
 
 
 const subDirReg = /^(((DVD|CD|DIS(K|C)).?([0-9](0-9)?))|Sample|Cover(s)?|.{0,5}Sub(s)?)$/i;
 
+const isSubdir = (name: string) => subDirReg.test(name);
+
+const isNfo = (name: string) => path.extname(name).toLowerCase() === '.nfo';
 
 // Checks if there are NFOs in any of the subdirectories
-const findNfo = (directory) => {
-  const isSubdir = name => subDirReg.test(name);
+const findNfo = (directory: DirectoryInfo): boolean => {
 
-  const isNfo = name => path.extname(name).toLowerCase() === '.nfo';
-
-  const scanSubdirectory = async (parentPath, folderName) => {
+  const scanSubdirectory = async (parentPath: string, folderName: string) => {
     const fullPath = path.join(directory.path, folderName);
 
     try {
@@ -27,12 +27,12 @@ const findNfo = (directory) => {
     return false;
   };
 
-  return directory.folders
-        .filter(isSubdir)
-        .find(scanSubdirectory.bind(this, directory.path));
+  return !!directory.folders
+    .filter(isSubdir)
+    .find(scanSubdirectory.bind(this, directory.path));
 };
  
-const validate = async (directory, reporter) => {
+const validate: Validate = async (directory, reporter) => {
   // NFO file should generally be under the root release directory
   //
   // If all child directories are releases, don't report anything 
@@ -51,7 +51,7 @@ const validate = async (directory, reporter) => {
   }
 };
 
-const validateCondition = directory => !directory.nfoFiles.length;
+const validateCondition: ValidateCondition = directory => !directory.nfoFiles.length;
  
 export default {
   validateCondition,

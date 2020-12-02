@@ -1,9 +1,8 @@
-import path from 'path';
-import { ErrorType } from '../ErrorCollector';
+import { ErrorType, Validate, ValidateCondition } from '../types';
 
 const emptyDirReg = /^(\S*(((nfo|dir).?fix)|nfo.only)\S*)$/i;
 
-const validate = async (directory, reporter) => {
+const validate: Validate = async (directory, reporter) => {
   if (directory.nfoFiles.length > 1) {
     reporter.addFolder(directory.path, 'multiple_nfo_files', 'Multiple NFO files', ErrorType.EXTRA_ITEMS);
   }
@@ -19,7 +18,7 @@ const validate = async (directory, reporter) => {
   }
 };
 
-const validateCondition = directory => directory.nfoFiles.length || directory.sfvFiles.length;
+const validateCondition: ValidateCondition = directory => !!directory.nfoFiles.length || !!directory.sfvFiles.length;
  
 export default {
   validateCondition,

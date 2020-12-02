@@ -1,12 +1,15 @@
 import path from 'path';
-
-import { TotalErrorCounter, ValidatorErrorReporter } from './ErrorCollector';
-
 import fs from 'async-file';
 
+import { TotalErrorCounter, ValidatorErrorReporter } from './errors';
+
+import { DirectoryInfo, ErrorLogger, ErrorType, Validator } from './types';
+
+
+type PathValidator = (path: string) => Promise<boolean> | boolean;
 
 // Scanner instance
-const Scanner = (validators, errorLogger, validatePath) => {
+const Scanner = (validators: Validator[], errorLogger: ErrorLogger, validatePath: PathValidator) => {
   const start = new Date();
 
   const errors = TotalErrorCounter();
@@ -14,14 +17,14 @@ const Scanner = (validators, errorLogger, validatePath) => {
 
   // Add file in content info object
   // Returns false in case of errors
-  const parseFile = async (directoryInfo, name) => {
+  const parseFile = async (directoryInfo: DirectoryInfo, name: string) => {
     const fullPath = path.join(directoryInfo.path, name);
 
     let stat;
     try {
       stat = await fs.stat(fullPath);
     } catch (e) {
-      errors.add('disk_read_error', `Failed to read file: ${e}`);
+      errors.add('disk_read_error', `Failed to read file: ${e}`, ErrorType.INVALID_CONTENT);
       return false;
     }
 
@@ -52,13 +55,13 @@ const Scanner = (validators, errorLogger, validatePath) => {
   };
 
   // Return info object about the folder content
-  const parseContent = async (directoryPath) => {
+  const parseContent = async (directoryPath: string) => {
     let contentList;
 
     try {
       contentList = await fs.readdir(directoryPath);
     } catch (e) {
-      errors.add('disk_read_error', `Failed to read disk content: ${e}`);
+      errors.add('disk_read_error', `Failed to read disk content: ${e}`, ErrorType.INVALID_CONTENT);
       return null;
     }
 
@@ -80,7 +83,7 @@ const Scanner = (validators, errorLogger, validatePath) => {
     return info;
   };
 
-  const runValidator = async (content, validator) => {
+  const runValidator = async (content: DirectoryInfo, validator: Validator) => {
     if (validator.validateCondition && !validator.validateCondition(content)) {
       return;
     }
@@ -90,7 +93,7 @@ const Scanner = (validators, errorLogger, validatePath) => {
     validatorErrors.flush();
   };
 
-  const scanPath = async (directoryPath, recursive = true) => {
+  const scanPath = async (directoryPath: string, recursive = true) => {
     running++;
     if (running > maxRunning) {
       maxRunning = running;
@@ -119,17 +122,17 @@ const Scanner = (validators, errorLogger, validatePath) => {
     }
   };
 
-  const scanPathsConcurrent = async (paths) => {
+  const scanPathsConcurrent = async (paths: string[]) => {
     await Promise.all(paths.map(p => scanPath(p)));
   };
 
-  const scanPathsSequential = async (paths) => {
+  const scanPathsSequential = async (paths: string[]) => {
     for (let p of paths) {
       await scanPath(p);
     }
   };
 
-  const scanPaths = async (paths) => {
+  const scanPaths = async (paths: string[]) => {
     await scanPathsConcurrent(paths);
   };
 
@@ -151,5 +154,7 @@ const Scanner = (validators, errorLogger, validatePath) => {
     }
   };
 };
+
+export type ScannerType = ReturnType<typeof Scanner>;
 
 export default Scanner;

@@ -6,7 +6,7 @@ import path from 'path';
 const crc32Reg = /\s(\w{8})$/;
 
 
-const reduceContent = (reduced, line) => {
+const reduceContent = (reduced: { [key in string]: string }, line: string) => {
   const tokens = line.split(crc32Reg);
   if (tokens[0] && tokens.length > 1) {
     let name = tokens[0];
@@ -23,14 +23,14 @@ const reduceContent = (reduced, line) => {
 };
 
 // Remove lines that have been commented out or contain subdirectories
-const filterLines = (line) => {
+const filterLines = (line: string) => {
   return line && line.indexOf(';') === -1 && line.indexOf('\\') === -1;
 };
 
-const SFVReader = (directoryPath) => {
+const SFVReader = (directoryPath: string) => {
   const content = {};
 
-  const load = async (sfvName) => {
+  const load = async (sfvName: string) => {
     const filePath = path.join(directoryPath, sfvName);
     const stat = await fs.stat(filePath);
 
@@ -39,7 +39,7 @@ const SFVReader = (directoryPath) => {
       throw new Error(`SFV file is too large (${sizeMb} MiB)`);
     }
 
-    const file = await fs.readFile(filePath, 'utf-8');
+    const file = await fs.readFile(filePath, 'utf8');
     const loaded = eol.split(file)
       .filter(filterLines)
       .reduce(reduceContent, {});

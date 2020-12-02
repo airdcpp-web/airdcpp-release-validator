@@ -1,12 +1,15 @@
 import ScanRunners from 'ScanRunners';
+
+import { APISocket } from 'airdcpp-apisocket';
 import path from 'path';
 
 import validators from 'validators';
 
 import { MockLogger as logger } from './helpers';
+import { ScannerType } from 'Scanner';
 
 describe('Scan runner', () => {
-  const getScanRunners = (socket, ignoreExcluded = false) => {
+  const getScanRunners = (socket: APISocket, ignoreExcluded = false) => {
     return ScanRunners(socket, 'test-extension', () => ({
       validators,
       ignoreExcluded,
@@ -27,13 +30,13 @@ describe('Scan runner', () => {
     const socket = {
       post: (_) => {},
       logger,
-    };
+    } as APISocket;
 
     const reject = jest.fn();
     const accept = jest.fn();
 
     const runner = getScanRunners(socket);
-    const scanner = await runner.onBundleFinished(bundle, accept, reject);
+    const scanner = await runner.onBundleFinished(bundle, accept, reject) as any as ScannerType;
 
     expect(reject.mock.calls.length).toBe(1);
     expect(reject.mock.calls[0]).toMatchInlineSnapshot(`
@@ -57,18 +60,19 @@ describe('Scan runner', () => {
     const socket = {
       post: (_) => {},
       logger,
-    };
+    } as APISocket;
 
     const reject = jest.fn();
     const accept = jest.fn();
 
     const runner = getScanRunners(socket);
-    const scanner = await runner.onShareDirectoryAdded(
-      false,
+
+    const onShareDirectoryAdded = runner.getShareDirectoryAddedHandler(false);
+    const scanner = await onShareDirectoryAdded(
       hookData,
       accept,
       reject
-    );
+    ) as any as ScannerType;
 
     expect(reject.mock.calls.length).toBe(1);
     /*expect(reject.mock.calls[0]).toMatchInlineSnapshot(`
@@ -87,7 +91,7 @@ describe('Scan runner', () => {
 
     const ignoredPathFn = jest.fn();
     const socket = {
-      post: (url, data) => {
+      post: (url: string, data: any) => {
         // Events
         if (url.startsWith('events')) {
           return {};
@@ -107,7 +111,7 @@ describe('Scan runner', () => {
         return {};
       },
       logger,
-    };
+    } as APISocket;
 
     const hookData = {
       path: scanPath,
@@ -118,12 +122,12 @@ describe('Scan runner', () => {
     const accept = jest.fn();
 
     const runner = getScanRunners(socket, true);
-    const scanner = await runner.onShareDirectoryAdded(
-      false,
+    const onShareDirectoryAdded = runner.getShareDirectoryAddedHandler(false);
+    const scanner = await onShareDirectoryAdded(
       hookData,
       accept,
       reject
-    );
+    ) as any as ScannerType;
 
     expect(reject.mock.calls.length).toBe(0);
     expect(accept.mock.calls.length).toBe(1);
@@ -136,7 +140,7 @@ describe('Scan runner', () => {
 
     const ignoredPathFn = jest.fn();
     const socket = {
-      post: (url, data) => {
+      post: (url: string, data: any) => {
         // Events
         if (url.startsWith('events')) {
           return {};
@@ -151,7 +155,7 @@ describe('Scan runner', () => {
         return {};
       },
       logger,
-    };
+    } as APISocket;
 
     const hookData = {
       path: scanPath,
@@ -162,12 +166,12 @@ describe('Scan runner', () => {
     const accept = jest.fn();
 
     const runner = getScanRunners(socket, true);
-    const scanner = await runner.onShareDirectoryAdded(
-      false,
+    const onShareDirectoryAdded = runner.getShareDirectoryAddedHandler(false);
+    const scanner = await onShareDirectoryAdded(
       hookData,
       accept,
       reject
-    );
+    ) as any as ScannerType;
 
     expect(reject.mock.calls.length).toBe(0);
     expect(accept.mock.calls.length).toBe(1);
@@ -184,13 +188,13 @@ describe('Scan runner', () => {
     };
 
     const socket = {
-      post: () => {},
-      get: () => Promise.resolve(shareRootInfo),
+      post: (_) => {},
+      get: (_) => Promise.resolve(shareRootInfo),
       logger,
-    };
+    } as APISocket;
 
     const runner = getScanRunners(socket);
-    const scanner = await runner.scanShareRoots([1]);
+    const scanner = await runner.scanShareRoots([ 'CWXQGJYK3QERDRGB25M4ABJMGF2F4ODDDOON25A' ]);
 
     expect(scanner.errors.count() > 0).toBe(true);
     expect(scanner.stats.scannedDirectories).toBe(2);
@@ -205,10 +209,10 @@ describe('Scan runner', () => {
     ];
 
     const socket = {
-      post: () => {},
-      get: () => Promise.resolve(sharePaths),
+      post: (_) => {},
+      get: (_) => Promise.resolve(sharePaths),
       logger,
-    };
+    } as APISocket;
 
     const runner = getScanRunners(socket);
     const scanner = await runner.scanShare();
@@ -225,10 +229,10 @@ describe('Scan runner', () => {
     ];
 
     const socket = {
-      post: () => {},
-      get: () => Promise.resolve(sharePaths),
+      post: (_) => {},
+      get: (_) => Promise.resolve(sharePaths),
       logger,
-    };
+    } as APISocket;
 
     const runner = getScanRunners(socket);
     const scanner = await runner.scanShare();

@@ -33,7 +33,7 @@ if (!release) {
 
 module.exports = {
   mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
-  entry: release && !profiling ? './src/index.js' : './src/main.js',
+  entry: release && !profiling ? './src/index.ts' : './src/main.ts',
   target: 'node',
   output: {
     path: path.join(__dirname, 'dist'),
@@ -48,10 +48,17 @@ module.exports = {
   module: {
     rules: [
       { 
-        test: /\.(js)$/, 
-        include: /src/, 
-        use: 'babel-loader',
+        test: /\.(ts|js)$/,
+        use: 'ts-loader',
+        exclude: /node_modules/
       }
     ]
-  }
+  },
+  resolve: {
+    extensions: [ '.ts', '.js' ],
+    modules: [
+      path.resolve('./src'),
+      'node_modules'
+    ],
+  },
 }

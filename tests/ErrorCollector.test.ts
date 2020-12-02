@@ -1,14 +1,17 @@
 import { MockErrorLogger as errorLogger } from './helpers';
-import {
-  ErrorType,
-  TotalErrorCounter,
-  ValidatorErrorReporter,
-} from 'ErrorCollector';
+
+import { TotalErrorCounter, ValidatorErrorReporter } from 'errors';
+import { DirectoryInfo, ErrorType } from 'types';
 
 describe('Error collector', () => {
   const getCollectors = () => {
-    const directoryInfo = {
+    const directoryInfo: DirectoryInfo = {
       path: 'mock_path',
+      name: 'mock_name',
+      sfvFiles: [],
+      nfoFiles: [],
+      files: [],
+      folders: [],
     };
 
     const totalCounter = TotalErrorCounter();
