@@ -1,12 +1,16 @@
 import { ErrorLogger, SeverityEnum } from 'types';
 
 
-export const MemoryErrorLogger = () => {
+export const getMemoryErrorLogger = (addPath: boolean) => {
   let str = '';
 
   const logger: ErrorLogger = (path, error) => {
     if (!!str.length) {
       str += '\n';
+    }
+
+    if (addPath) {
+      str += `${path}: `;
     }
 
     str += error;

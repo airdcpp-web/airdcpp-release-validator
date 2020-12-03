@@ -1,4 +1,4 @@
-import SFVReader from 'SFVReader';
+import SFVReader from 'helpers/SFVReader';
 import path from 'path';
 
 

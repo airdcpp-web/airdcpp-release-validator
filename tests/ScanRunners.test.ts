@@ -18,11 +18,15 @@ describe('Scan runner', () => {
         validators,
         ignoreExcluded,
       }),
-      api: {
-        url: 'mock_url',
-        secure: false,
-        token: 'mock-token',
-        tokenType: 'mock-token-type',
+      application: {
+        server: {
+          address: 'mock_url',
+          secure: false,
+        },
+        session: {
+          token: 'mock-token',
+          tokenType: 'mock-token-type',
+        },
       }
     };
 

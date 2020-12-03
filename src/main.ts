@@ -65,10 +65,12 @@ export default function (socket: APISocket, extension: ExtensionEntryData) {
         ignoreExcluded: settings.getValue('ignore_excluded'),
         validators: validators.filter(validatorEnabled),
       }),
-      api: {
-        ...extension.api,
-        token: sessionInfo.auth_token,
-        tokenType: sessionInfo.token_type,
+      application: {
+        server: extension.server,
+        session: {
+          token: sessionInfo.auth_token,
+          tokenType: sessionInfo.token_type,
+        },
       }
     };
 

@@ -1,6 +1,6 @@
 
 import { APISocket } from 'airdcpp-apisocket';
-import { AddressInfo } from 'airdcpp-extension';
+import { ServerInfo } from 'airdcpp-extension';
 
 // ERRORS
 export enum ErrorType {
@@ -49,6 +49,7 @@ export interface ChatCommandData {
 export interface SessionInfo {
   system_info: {
     // path_separator: string;
+    // cid: string;
     api_feature_level: number;
   };
   auth_token: string;
@@ -91,13 +92,16 @@ interface Config {
 
 type ConfigGetter = () => Config;
 
-interface ApiInfo extends AddressInfo {
-  token: string;
-  tokenType: string;
+export interface ApplicationInfo {
+  server: ServerInfo;
+  session: {
+    token: string;
+    tokenType: string;
+  };
 }
 export interface Context {
   socket: APISocket;
   configGetter: ConfigGetter;
   extensionName: string;
-  api: ApiInfo;
+  application: ApplicationInfo;
 }

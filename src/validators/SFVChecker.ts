@@ -1,5 +1,5 @@
 import path from 'path';
-import SFVReader from '../SFVReader';
+import SFVReader from '../helpers/SFVReader';
 import { ErrorType, Validate, ValidateCondition } from '../types';
  
  
