@@ -4,16 +4,29 @@ import { APISocket } from 'airdcpp-apisocket';
 import path from 'path';
 
 import validators from 'validators';
+import { Context } from 'types';
 
 import { MockLogger as logger } from './helpers';
 import { ScannerType } from 'Scanner';
 
 describe('Scan runner', () => {
   const getScanRunners = (socket: APISocket, ignoreExcluded = false) => {
-    return ScanRunners(socket, 'test-extension', () => ({
-      validators,
-      ignoreExcluded,
-    }));
+    const context: Context = {
+      socket, 
+      extensionName: 'test-extension',
+      configGetter: () => ({
+        validators,
+        ignoreExcluded,
+      }),
+      api: {
+        url: 'mock_url',
+        secure: false,
+        token: 'mock-token',
+        tokenType: 'mock-token-type',
+      }
+    };
+
+    return ScanRunners(context);
   };
 
   test('should reject invalid bundles', async () => {

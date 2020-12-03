@@ -1,19 +1,12 @@
 import Scanner from './Scanner';
 
-import { APISocket, HookCallback } from 'airdcpp-apisocket';
-import { Bundle, GroupedPath, SharePathHookData, ShareRoot, SeverityEnum, Validator } from './types';
+import { HookCallback } from 'airdcpp-apisocket';
+import { Bundle, GroupedPath, SharePathHookData, ShareRoot, SeverityEnum, Context } from './types';
 import { getApiErrorLogger, MemoryErrorLogger } from 'errors/ErrorLogger';
 
 
-interface Config {
-  ignoreExcluded: boolean;
-  validators: Validator[];
-}
-
-type ConfigGetter = () => Config;
-
 // Scan initiators
-const ScanRunners = function (socket: APISocket, extensionName: string, configGetter: ConfigGetter) {
+const ScanRunners = function ({ socket, extensionName, configGetter }: Context) {
   const reduceGroupedPath = (reduced: string[], info: GroupedPath) => {
     reduced.push(...info.paths);
     return reduced;

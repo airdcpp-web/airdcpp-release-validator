@@ -28,11 +28,11 @@
   },
   "devDependencies": {
     "@types/invariant": "^2.2.34",
-    "airdcpp-extension": "^1.4.0-beta",
+    "airdcpp-extension": "^1.4.0-beta.2",
     "airdcpp-extension-settings": "^1.1.0",
     "async-file": "^2.0.2",
     "core-js": "^3.8.0",
-    "cross-env": "^7.0.2",
+    "cross-env": "^7.0.3",
     "eol": "^0.9.0",
     "eslint": "^7.14.0",
     "eslint-config-prettier": "^6.15.0",

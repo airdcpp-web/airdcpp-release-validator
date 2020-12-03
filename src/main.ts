@@ -26,7 +26,7 @@ import { ExtensionEntryData } from 'airdcpp-extension';
 //@ts-ignore
 import SettingsManager from 'airdcpp-extension-settings';
 import ScanRunners from './ScanRunners';
-import { ChatCommandData, SessionInfo } from './types';
+import { ChatCommandData, Context, SessionInfo } from './types';
 import validators from './validators';
 
 
@@ -58,14 +58,21 @@ export default function (socket: APISocket, extension: ExtensionEntryData) {
   extension.onStart = async (sessionInfo: SessionInfo) => {
     await settings.load();
 
-    runners = ScanRunners(
-      socket, 
-      extension.name,
-      () => ({
+    const context: Context = {
+      socket,
+      extensionName: extension.name,
+      configGetter: () => ({
         ignoreExcluded: settings.getValue('ignore_excluded'),
         validators: validators.filter(validatorEnabled),
-      })
-    );
+      }),
+      api: {
+        ...extension.api,
+        token: sessionInfo.auth_token,
+        tokenType: sessionInfo.token_type,
+      }
+    };
+
+    runners = ScanRunners(context);
 
     // CHAT COMMANDS
     const checkChatCommand = (data: ChatCommandData) => {

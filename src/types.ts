@@ -1,3 +1,7 @@
+
+import { APISocket } from 'airdcpp-apisocket';
+import { AddressInfo } from 'airdcpp-extension';
+
 // ERRORS
 export enum ErrorType {
   ITEMS_MISSING = 'items_missing',
@@ -46,7 +50,9 @@ export interface SessionInfo {
   system_info: {
     // path_separator: string;
     api_feature_level: number;
-  }
+  };
+  auth_token: string;
+  token_type: string;
 }
 
 export interface Bundle {
@@ -75,4 +81,23 @@ export const enum SeverityEnum {
   INFO = 'info',
   WARNING = 'warning',
   ERROR = 'error',
+}
+
+// CONTEXT
+interface Config {
+  ignoreExcluded: boolean;
+  validators: Validator[];
+}
+
+type ConfigGetter = () => Config;
+
+interface ApiInfo extends AddressInfo {
+  token: string;
+  tokenType: string;
+}
+export interface Context {
+  socket: APISocket;
+  configGetter: ConfigGetter;
+  extensionName: string;
+  api: ApiInfo;
 }
