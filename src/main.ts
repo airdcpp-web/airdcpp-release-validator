@@ -21,11 +21,16 @@ const SettingDefinitions = [
 
 const CONFIG_VERSION = 1;
 
+
+import axios from 'axios';
+
 import { addContextMenuItems, APISocket } from 'airdcpp-apisocket';
 import { ExtensionEntryData } from 'airdcpp-extension';
 //@ts-ignore
 import SettingsManager from 'airdcpp-extension-settings';
+
 import { API } from 'api';
+
 import ScanRunners from './ScanRunners';
 import { ChatCommandData, Context, SessionInfo } from './types';
 import validators from './validators';
@@ -62,6 +67,7 @@ export default function (socket: APISocket, extension: ExtensionEntryData) {
     const api = API(socket);
     const context: Context = {
       api,
+      axios,
       logger: socket.logger,
       extensionName: extension.name,
       configGetter: () => ({

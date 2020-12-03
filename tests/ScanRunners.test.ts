@@ -2,48 +2,15 @@ import ScanRunners from 'ScanRunners';
 
 import path from 'path';
 
-import validators from 'validators';
-import { Context } from 'types';
-
-import { MockLogger as logger } from './helpers';
+import { getMockContext, getMockApi, MockContextOptions } from './mock-context';
 import { ScannerType } from 'Scanner';
 import { APIType } from 'api';
 
 
-const getMockApi = (customHandlers: Partial<APIType> = {}): APIType => {
-  const api = {
-    ...customHandlers,
-    postEvent: () => {
-      return Promise.resolve();
-    },
-  } as Partial<APIType>;
-
-  return api as APIType;
-};
-
 
 describe('Scan runner', () => {
-  const getScanRunners = (api: APIType, ignoreExcluded = false) => {
-    const context: Context = {
-      api,
-      logger, 
-      extensionName: 'test-extension',
-      configGetter: () => ({
-        validators,
-        ignoreExcluded,
-      }),
-      application: {
-        server: {
-          address: 'mock_url',
-          secure: false,
-        },
-        session: {
-          token: 'mock-token',
-          tokenType: 'mock-token-type',
-        },
-      }
-    };
-
+  const getScanRunners = (api: APIType, options?: Partial<MockContextOptions>) => {
+    const context = getMockContext(api, options);
     return ScanRunners(context);
   };
 
@@ -138,7 +105,11 @@ describe('Scan runner', () => {
     const reject = jest.fn();
     const accept = jest.fn();
 
-    const runner = getScanRunners(api, true);
+    const runner = getScanRunners(api, {
+      configOverrides: {
+        ignoreExcluded: true,
+      }
+    });
     const onShareDirectoryAdded = runner.getShareDirectoryAddedHandler(false);
     const scanner = await onShareDirectoryAdded(
       hookData,
@@ -172,7 +143,11 @@ describe('Scan runner', () => {
     const reject = jest.fn();
     const accept = jest.fn();
 
-    const runner = getScanRunners(api, true);
+    const runner = getScanRunners(api, {
+      configOverrides: {
+        ignoreExcluded: true,
+      }
+    });
     const onShareDirectoryAdded = runner.getShareDirectoryAddedHandler(false);
     const scanner = await onShareDirectoryAdded(
       hookData,

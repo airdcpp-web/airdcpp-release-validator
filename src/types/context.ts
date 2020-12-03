@@ -3,10 +3,11 @@ import { ServerInfo } from 'airdcpp-extension';
 import { Validator } from './internal';
 import { APIType } from 'api';
 import { Logger } from 'airdcpp-apisocket';
+import { AxiosInstance } from 'axios';
 
 
 // CONTEXT
-interface Config {
+export interface Config {
   ignoreExcluded: boolean;
   validators: Validator[];
 }
@@ -27,4 +28,5 @@ export interface Context {
   application: ApplicationInfo;
   api: APIType;
   logger: Logger;
+  axios: AxiosInstance;
 }
