@@ -1,6 +1,5 @@
 import ScanRunners from 'ScanRunners';
 
-import { APISocket } from 'airdcpp-apisocket';
 import path from 'path';
 
 import validators from 'validators';
@@ -8,11 +7,26 @@ import { Context } from 'types';
 
 import { MockLogger as logger } from './helpers';
 import { ScannerType } from 'Scanner';
+import { APIType } from 'api';
+
+
+const getMockApi = (customHandlers: Partial<APIType> = {}): APIType => {
+  const api = {
+    ...customHandlers,
+    postEvent: () => {
+      return Promise.resolve();
+    },
+  } as Partial<APIType>;
+
+  return api as APIType;
+};
+
 
 describe('Scan runner', () => {
-  const getScanRunners = (socket: APISocket, ignoreExcluded = false) => {
+  const getScanRunners = (api: APIType, ignoreExcluded = false) => {
     const context: Context = {
-      socket, 
+      api,
+      logger, 
       extensionName: 'test-extension',
       configGetter: () => ({
         validators,
@@ -43,16 +57,13 @@ describe('Scan runner', () => {
         id: 'directory',
       },
     };
-
-    const socket = {
-      post: (_) => {},
-      logger,
-    } as APISocket;
+    
+    const api = getMockApi();
 
     const reject = jest.fn();
     const accept = jest.fn();
 
-    const runner = getScanRunners(socket);
+    const runner = getScanRunners(api);
     const scanner = await runner.onBundleFinished(bundle, accept, reject) as any as ScannerType;
 
     expect(reject.mock.calls.length).toBe(1);
@@ -73,16 +84,13 @@ describe('Scan runner', () => {
       path: scanPath,
       new_parent: false,
     };
-
-    const socket = {
-      post: (_) => {},
-      logger,
-    } as APISocket;
+    
+    const api = getMockApi();
 
     const reject = jest.fn();
     const accept = jest.fn();
 
-    const runner = getScanRunners(socket);
+    const runner = getScanRunners(api);
 
     const onShareDirectoryAdded = runner.getShareDirectoryAddedHandler(false);
     const scanner = await onShareDirectoryAdded(
@@ -107,28 +115,20 @@ describe('Scan runner', () => {
     const scanPath = path.join(__dirname, 'data/Test.Release-TEST');
 
     const ignoredPathFn = jest.fn();
-    const socket = {
-      post: (url: string, data: any) => {
-        // Events
-        if (url.startsWith('events')) {
-          return {};
+
+    const api = getMockApi({
+      validateSharePath: (validatedPath, skipCheckQueue) => {
+        if (
+          validatedPath.endsWith('Sample' + path.sep) ||
+          validatedPath.endsWith('forbidden_extra.zip')
+        ) {
+          ignoredPathFn(path, skipCheckQueue);
+          return Promise.reject('Ignored');
         }
 
-        if (url.startsWith('share')) {
-          // Share validator
-          if (
-            data.path.endsWith('Sample' + path.sep) ||
-            data.path.endsWith('forbidden_extra.zip')
-          ) {
-            ignoredPathFn(url, data);
-            throw Error('Ignored');
-          }
-        }
-
-        return {};
+        return Promise.resolve();
       },
-      logger,
-    } as APISocket;
+    });
 
     const hookData = {
       path: scanPath,
@@ -138,7 +138,7 @@ describe('Scan runner', () => {
     const reject = jest.fn();
     const accept = jest.fn();
 
-    const runner = getScanRunners(socket, true);
+    const runner = getScanRunners(api, true);
     const onShareDirectoryAdded = runner.getShareDirectoryAddedHandler(false);
     const scanner = await onShareDirectoryAdded(
       hookData,
@@ -156,23 +156,13 @@ describe('Scan runner', () => {
     const scanPath = path.join(__dirname, 'data/Test.Release-TEST');
 
     const ignoredPathFn = jest.fn();
-    const socket = {
-      post: (url: string, data: any) => {
-        // Events
-        if (url.startsWith('events')) {
-          return {};
-        }
 
-        if (url.startsWith('share')) {
-          // Share validator, fail all
-          ignoredPathFn(url, data);
-          throw Error('Ignored');
-        }
-
-        return {};
+    const api = getMockApi({
+      validateSharePath: (validatedPath, skipCheckQueue) => {
+        ignoredPathFn(validatedPath, skipCheckQueue);
+        return Promise.reject('Ignored');
       },
-      logger,
-    } as APISocket;
+    });
 
     const hookData = {
       path: scanPath,
@@ -182,7 +172,7 @@ describe('Scan runner', () => {
     const reject = jest.fn();
     const accept = jest.fn();
 
-    const runner = getScanRunners(socket, true);
+    const runner = getScanRunners(api, true);
     const onShareDirectoryAdded = runner.getShareDirectoryAddedHandler(false);
     const scanner = await onShareDirectoryAdded(
       hookData,
@@ -204,13 +194,13 @@ describe('Scan runner', () => {
       path: scanPath,
     };
 
-    const socket = {
-      post: (_) => {},
-      get: (_) => Promise.resolve(shareRootInfo),
-      logger,
-    } as APISocket;
+    const api = getMockApi({
+      getShareRoot: () => {
+        return Promise.resolve(shareRootInfo);
+      },
+    });
 
-    const runner = getScanRunners(socket);
+    const runner = getScanRunners(api);
     const scanner = await runner.scanShareRoots([ 'CWXQGJYK3QERDRGB25M4ABJMGF2F4ODDDOON25A' ]);
 
     expect(scanner.errors.count() > 0).toBe(true);
@@ -225,13 +215,13 @@ describe('Scan runner', () => {
       },
     ];
 
-    const socket = {
-      post: (_) => {},
-      get: (_) => Promise.resolve(sharePaths),
-      logger,
-    } as APISocket;
+    const api = getMockApi({
+      getGroupedShareRoots: () => {
+        return Promise.resolve(sharePaths);
+      },
+    });
 
-    const runner = getScanRunners(socket);
+    const runner = getScanRunners(api);
     const scanner = await runner.scanShare();
 
     expect(scanner.errors.count() > 0).toBe(true);
@@ -245,13 +235,13 @@ describe('Scan runner', () => {
       },
     ];
 
-    const socket = {
-      post: (_) => {},
-      get: (_) => Promise.resolve(sharePaths),
-      logger,
-    } as APISocket;
+    const api = getMockApi({
+      getGroupedShareRoots: () => {
+        return Promise.resolve(sharePaths);
+      },
+    });
 
-    const runner = getScanRunners(socket);
+    const runner = getScanRunners(api as APIType);
     const scanner = await runner.scanShare();
 
     expect(scanner.errors.count() > 0).toBe(true);

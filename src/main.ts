@@ -25,6 +25,7 @@ import { addContextMenuItems, APISocket } from 'airdcpp-apisocket';
 import { ExtensionEntryData } from 'airdcpp-extension';
 //@ts-ignore
 import SettingsManager from 'airdcpp-extension-settings';
+import { API } from 'api';
 import ScanRunners from './ScanRunners';
 import { ChatCommandData, Context, SessionInfo } from './types';
 import validators from './validators';
@@ -58,8 +59,10 @@ export default function (socket: APISocket, extension: ExtensionEntryData) {
   extension.onStart = async (sessionInfo: SessionInfo) => {
     await settings.load();
 
+    const api = API(socket);
     const context: Context = {
-      socket,
+      api,
+      logger: socket.logger,
       extensionName: extension.name,
       configGetter: () => ({
         ignoreExcluded: settings.getValue('ignore_excluded'),
