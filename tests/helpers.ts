@@ -20,3 +20,11 @@ export const MockLogger = {
   warn: () => {},
   error: () => {},
 };
+
+export const sanitizeResultPaths = (results: string) => {
+  // Remove absolute paths
+  const ret = results.split(__dirname).join('/TESTS_ROOT');
+
+  // Remove Windows path separators
+  return ret.split('\\').join('/');
+};

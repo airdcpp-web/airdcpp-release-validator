@@ -3,7 +3,7 @@ import Scanner, { ScannerType } from './Scanner';
 import { HookCallback } from 'airdcpp-apisocket';
 import { Bundle, GroupedPath, SharePathHookData, SeverityEnum, Context } from './types';
 import { getApiErrorLogger, getMemoryErrorLogger } from 'errors/ErrorLogger';
-// import { openLog } from 'helpers/LogViewer';
+import { openLog } from 'helpers/LogViewer';
 
 
 // Scan initiators
@@ -60,21 +60,27 @@ const ScanRunners = function (context: Context) {
   };
 
   const doManualScan = async (paths: string[]) => {
+    const logger = context.configGetter().separateLogFile ? getMemoryErrorLogger(true) : {
+      getLog: () => undefined,
+      logger: ApiErrorLogger,
+    };
 
-    // const logger = getMemoryErrorLogger(true);
-
-    const logger = ApiErrorLogger;
-    const scanner = Scanner(configGetter().validators, logger, pathValidator(false));
-
+    // Scan
+    const scanner = Scanner(configGetter().validators, logger.logger, pathValidator(false));
     await scanner.scanPaths(paths);
 
-    /*try {
-      await openLog(logger.getLog(), context);
-    } catch (e) {
-      postEvent(`Failed to open scan results: ${e.message}`, SeverityEnum.ERROR);
-    }*/
+    // Report
+    const resultData = logger.getLog();
+    if (!!resultData) {
+      try {
+        await openLog(resultData, context);
+      } catch (e) {
+        api.postEvent(`Failed to open scan results: ${e.message}`, SeverityEnum.ERROR);
+      }
+    }
 
     onManualScanCompleted(scanner);
+
     return scanner;
   };
 

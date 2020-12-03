@@ -18,8 +18,10 @@ export const getMockApi = (customHandlers: Partial<APIType> = {}): APIType => {
 
 export interface MockContextOptions {
   configOverrides?: Partial<Config>;
-  axios?: any;
+  axios?: (data: object) => Promise<any>;
 }
+
+export const MOCK_RESULT_LOG_NAME = 'mock_log_name';
 
 export const MockApplicationInfo: ApplicationInfo = {
   server: {
@@ -41,7 +43,9 @@ export const getMockContext = (api: APIType, options: Partial<MockContextOptions
     configGetter: () => ({
       validators,
       ignoreExcluded: options.configOverrides?.ignoreExcluded || false,
+      separateLogFile: options.configOverrides?.separateLogFile || false,
     }),
+    generateResultLogName: () => MOCK_RESULT_LOG_NAME,
     application: MockApplicationInfo,
   };
 

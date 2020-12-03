@@ -16,6 +16,11 @@ const SettingDefinitions = [
     title: 'Ignore files/directories that are excluded from share',
     default_value: false,
     type: 'boolean'
+  }, {
+    key: 'separate_log_file',
+    title: 'Open manual scan results in a separate file',
+    default_value: false,
+    type: 'boolean'
   },
 ];
 
@@ -70,8 +75,10 @@ export default function (socket: APISocket, extension: ExtensionEntryData) {
       axios,
       logger: socket.logger,
       extensionName: extension.name,
+      generateResultLogName: () => `Share scan ${new Date().toLocaleString()}`,
       configGetter: () => ({
         ignoreExcluded: settings.getValue('ignore_excluded'),
+        separateLogFile: settings.getValue('separate_log_file'),
         validators: validators.filter(validatorEnabled),
       }),
       application: {

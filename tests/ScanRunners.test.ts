@@ -2,14 +2,21 @@ import ScanRunners from 'ScanRunners';
 
 import path from 'path';
 
-import { getMockContext, getMockApi, MockContextOptions } from './mock-context';
+import {
+  getMockContext,
+  getMockApi,
+  MockContextOptions,
+  MOCK_RESULT_LOG_NAME,
+} from './mock-context';
 import { ScannerType } from 'Scanner';
 import { APIType } from 'api';
-
-
+import { sanitizeResultPaths } from './helpers';
 
 describe('Scan runner', () => {
-  const getScanRunners = (api: APIType, options?: Partial<MockContextOptions>) => {
+  const getScanRunners = (
+    api: APIType,
+    options?: Partial<MockContextOptions>
+  ) => {
     const context = getMockContext(api, options);
     return ScanRunners(context);
   };
@@ -24,14 +31,18 @@ describe('Scan runner', () => {
         id: 'directory',
       },
     };
-    
+
     const api = getMockApi();
 
     const reject = jest.fn();
     const accept = jest.fn();
 
     const runner = getScanRunners(api);
-    const scanner = await runner.onBundleFinished(bundle, accept, reject) as any as ScannerType;
+    const scanner = ((await runner.onBundleFinished(
+      bundle,
+      accept,
+      reject
+    )) as any) as ScannerType;
 
     expect(reject.mock.calls.length).toBe(1);
     expect(reject.mock.calls[0]).toMatchInlineSnapshot(`
@@ -51,7 +62,7 @@ describe('Scan runner', () => {
       path: scanPath,
       new_parent: false,
     };
-    
+
     const api = getMockApi();
 
     const reject = jest.fn();
@@ -60,19 +71,19 @@ describe('Scan runner', () => {
     const runner = getScanRunners(api);
 
     const onShareDirectoryAdded = runner.getShareDirectoryAddedHandler(false);
-    const scanner = await onShareDirectoryAdded(
+    const scanner = ((await onShareDirectoryAdded(
       hookData,
       accept,
       reject
-    ) as any as ScannerType;
+    )) as any) as ScannerType;
 
     expect(reject.mock.calls.length).toBe(1);
-    /*expect(reject.mock.calls[0]).toMatchInlineSnapshot(`
+    expect(reject.mock.calls[0]).toMatchInlineSnapshot(`
       Array [
-        "extra_files",
-        "Following problems were found while scanning the share directory C:\\\\Projects\\\\airdcpp-release-validator\\\\tests\\\\data\\\\Test.Release-TEST: extra files in release directory (count: 1)",
+        "extra_items",
+        "Extra files in release directory (1 file(s): forbidden_extra.zip)",
       ]
-    `);*/
+    `);
 
     expect(accept.mock.calls.length).toBe(0);
     expect(scanner.stats.scannedDirectories).toBe(1); // Not recursive
@@ -108,14 +119,14 @@ describe('Scan runner', () => {
     const runner = getScanRunners(api, {
       configOverrides: {
         ignoreExcluded: true,
-      }
+      },
     });
     const onShareDirectoryAdded = runner.getShareDirectoryAddedHandler(false);
-    const scanner = await onShareDirectoryAdded(
+    const scanner = ((await onShareDirectoryAdded(
       hookData,
       accept,
       reject
-    ) as any as ScannerType;
+    )) as any) as ScannerType;
 
     expect(reject.mock.calls.length).toBe(0);
     expect(accept.mock.calls.length).toBe(1);
@@ -146,14 +157,14 @@ describe('Scan runner', () => {
     const runner = getScanRunners(api, {
       configOverrides: {
         ignoreExcluded: true,
-      }
+      },
     });
     const onShareDirectoryAdded = runner.getShareDirectoryAddedHandler(false);
-    const scanner = await onShareDirectoryAdded(
+    const scanner = ((await onShareDirectoryAdded(
       hookData,
       accept,
       reject
-    ) as any as ScannerType;
+    )) as any) as ScannerType;
 
     expect(reject.mock.calls.length).toBe(0);
     expect(accept.mock.calls.length).toBe(1);
@@ -176,7 +187,9 @@ describe('Scan runner', () => {
     });
 
     const runner = getScanRunners(api);
-    const scanner = await runner.scanShareRoots([ 'CWXQGJYK3QERDRGB25M4ABJMGF2F4ODDDOON25A' ]);
+    const scanner = await runner.scanShareRoots([
+      'CWXQGJYK3QERDRGB25M4ABJMGF2F4ODDDOON25A',
+    ]);
 
     expect(scanner.errors.count() > 0).toBe(true);
     expect(scanner.stats.scannedDirectories).toBe(2);
@@ -200,6 +213,89 @@ describe('Scan runner', () => {
     const scanner = await runner.scanShare();
 
     expect(scanner.errors.count() > 0).toBe(true);
+  });
+
+  test('should handle separate log files', async () => {
+    const sharePaths = [
+      {
+        name: 'VNAME',
+        paths: [path.join(__dirname, 'data/Test.Release-TEST')],
+      },
+    ];
+
+    const postTempShareFn = jest.fn();
+    const deleteTempShareFn = jest.fn();
+    const createViewFileFn = jest.fn();
+    const uploadContentFn = jest.fn();
+
+    const MOCK_UPLOAD_LOCATION_ID = 'MOCK_UPLOAD_ID';
+    const MOCK_VIEW_FILE_ID = 1;
+    const MOCK_TTH = 'mock_tth';
+
+    const api = getMockApi({
+      getGroupedShareRoots: () => {
+        return Promise.resolve(sharePaths);
+      },
+      deleteTempShare: (id) => {
+        deleteTempShareFn(id);
+        return Promise.resolve();
+      },
+      postTempShare: (tempFileId, name) => {
+        postTempShareFn(tempFileId, name);
+        return Promise.resolve({
+          item: {
+            tth: MOCK_TTH,
+            id: MOCK_VIEW_FILE_ID,
+          },
+        });
+      },
+      createViewFile: (tth) => {
+        createViewFileFn(tth);
+        return Promise.resolve();
+      },
+    });
+
+    const runner = getScanRunners(api as APIType, {
+      axios: (data) => {
+        uploadContentFn(data);
+        return Promise.resolve({
+          headers: {
+            location: MOCK_UPLOAD_LOCATION_ID,
+          },
+        });
+      },
+      configOverrides: {
+        separateLogFile: true,
+      },
+    });
+
+    await runner.scanShare();
+
+    expect(postTempShareFn).toHaveBeenCalledWith(
+      MOCK_UPLOAD_LOCATION_ID,
+      MOCK_RESULT_LOG_NAME
+    );
+    expect(deleteTempShareFn).toHaveBeenCalledWith(MOCK_VIEW_FILE_ID);
+    expect(createViewFileFn).toHaveBeenCalledWith(MOCK_TTH);
+
+    const axiosCall = uploadContentFn.mock.calls[0][0];
+    const sanitizedCall = {
+      ...axiosCall,
+      data: sanitizeResultPaths(axiosCall.data),
+    };
+
+    expect(sanitizedCall).toMatchInlineSnapshot(`
+      Object {
+        "data": "/TESTS_ROOT/data/Test.Release-TEST: Extra files in release directory (1 file(s): forbidden_extra.zip)
+      /TESTS_ROOT/data/Test.Release-TEST/Sample/: NFO/SFV found but there are no other files in the folder
+      /TESTS_ROOT/data/Test.Release-TEST/Sample/: No valid lines were parsed from the SFV file (1 file(s): invalid.sfv)",
+        "headers": Object {
+          "Authorization": "mock-token-type mock-token",
+        },
+        "method": "POST",
+        "url": "http://mock_url/temp",
+      }
+    `);
   });
 
   test('should report disk access errors', async () => {
