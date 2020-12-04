@@ -20,6 +20,7 @@ export interface ApplicationInfo {
     token: string;
     tokenType: string;
   };
+  cid: string;
 }
 export interface Context {
   configGetter: ConfigGetter;

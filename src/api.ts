@@ -34,9 +34,10 @@ export const API = (socket: APISocket) => {
     );
   };
 
-  const postTempShare = (tempFileId: string, name: string) => {
+  const postTempShare = (tempFileId: string, name: string, cid: string | undefined) => {
     return socket.post<PostTempShareResponse>('share/temp_shares', {
       file_id: tempFileId,
+      cid,
       name,
     });
   };

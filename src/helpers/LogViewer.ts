@@ -20,7 +20,7 @@ export const openLog = async (text: string, context: Context) => {
   const tempFileId = fileUploadRes.headers['location'];
 
   // Create a temp share item so that we get a TTH to view
-  const tempShareRes = await api.postTempShare(tempFileId, generateResultLogName());
+  const tempShareRes = await api.postTempShare(tempFileId, generateResultLogName(), context.application.cid);
 
   try {
     // View it

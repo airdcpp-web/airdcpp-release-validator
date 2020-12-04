@@ -1,3 +1,8 @@
+### Version 1.2.0 (2020-12-04)
+
+- Add an option to show manual scan results in a separate file
+- Ignore items excluded from share by default on Windows
+
 ### Version 1.1.3 (2020-12-02)
 
 - Show better rejection message for new share directories

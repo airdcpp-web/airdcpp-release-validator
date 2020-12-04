@@ -32,6 +32,7 @@ export const MockApplicationInfo: ApplicationInfo = {
     token: 'mock-token',
     tokenType: 'mock-token-type',
   },
+  cid: 'mock-cid'
 }
 
 export const getMockContext = (api: APIType, options: Partial<MockContextOptions> = {}) => {

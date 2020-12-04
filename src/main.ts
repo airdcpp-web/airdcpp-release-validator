@@ -64,6 +64,7 @@ export default function (socket: APISocket, extension: ExtensionEntryData) {
           token: sessionInfo.auth_token,
           tokenType: sessionInfo.token_type,
         },
+        cid: sessionInfo.system_info.cid,
       }
     };
 

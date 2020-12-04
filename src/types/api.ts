@@ -17,7 +17,7 @@ export enum PlatformEnum {
 export interface SessionInfo {
   system_info: {
     // path_separator: string;
-    // cid: string;
+    cid: string;
     api_feature_level: number;
     platform: PlatformEnum;
   };
