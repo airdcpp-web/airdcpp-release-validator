@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "@types/invariant": "^2.2.34",
-    "airdcpp-extension": "^1.4.0-beta.2",
+    "airdcpp-extension": "^1.4.0-beta.3",
     "airdcpp-extension-settings": "^1.1.0",
     "async-file": "^2.0.2",
     "axios": "^0.21.0",
