@@ -1,29 +1,5 @@
 'use strict';
 
-const SettingDefinitions = [
-  {
-    key: 'scan_finished_bundles',
-    title: 'Scan finished bundles',
-    default_value: true,
-    type: 'boolean'
-  }, {
-    key: 'scan_new_share_directories',
-    title: 'Scan new share directories',
-    default_value: true,
-    type: 'boolean'
-  }, {
-    key: 'ignore_excluded',
-    title: 'Ignore files/directories that are excluded from share',
-    default_value: false,
-    type: 'boolean'
-  }, {
-    key: 'separate_log_file',
-    title: 'Open manual scan results in a separate file',
-    default_value: false,
-    type: 'boolean'
-  },
-];
-
 const CONFIG_VERSION = 1;
 
 
@@ -39,6 +15,7 @@ import { API } from 'api';
 import ScanRunners from './ScanRunners';
 import { ChatCommandData, Context, SessionInfo } from './types';
 import validators from './validators';
+import { getSettingDefinitions } from 'settings';
 
 
 const SCAN_ACCESS = 'settings_edit';
@@ -48,25 +25,25 @@ const hasScanAccess = (permissions: string[]) => {
 };
 
 export default function (socket: APISocket, extension: ExtensionEntryData) {
-  // INITIALIZATION
-  const settings = SettingsManager(socket, {
-    extensionName: extension.name, 
-    configFile: extension.configPath + 'config.json',
-    configVersion: CONFIG_VERSION,
-    definitions: [ 
-      ...validators.map(validator => validator.setting),
-      ...SettingDefinitions,
-    ],
-  });
-
-  const validatorEnabled = ({ setting }: any) => {
-    return !setting || settings.getValue(setting.key);
-  };
-
   let runners: ReturnType<typeof ScanRunners>;
 
   // EXTENSION LIFECYCLE
   extension.onStart = async (sessionInfo: SessionInfo) => {
+    // INITIALIZATION
+    const settings = SettingsManager(socket, {
+      extensionName: extension.name, 
+      configFile: extension.configPath + 'config.json',
+      configVersion: CONFIG_VERSION,
+      definitions: [ 
+        ...validators.map(validator => validator.setting),
+        ...getSettingDefinitions(sessionInfo),
+      ],
+    });
+
+    const validatorEnabled = ({ setting }: any) => {
+      return !setting || settings.getValue(setting.key);
+    };
+
     await settings.load();
 
     const api = API(socket);
