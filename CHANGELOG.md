@@ -1,3 +1,7 @@
+### Version 1.2.1 (2020-12-06)
+
+- Fix a crash with application versions older than 2.10.0
+
 ### Version 1.2.0 (2020-12-04)
 
 - Add an option to show manual scan results in a separate file

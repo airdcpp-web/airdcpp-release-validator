@@ -1,6 +1,6 @@
 {
   "name": "airdcpp-release-validator",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Scan downloaded and shared release directories for missing/extra files",
   "license": "MIT",
   "author": {
