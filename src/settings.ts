@@ -1,5 +1,10 @@
 import { PlatformEnum, SessionInfo } from 'types';
 
+
+export const hasSeparateLogFileSupport = (sessionInfo: SessionInfo) => {
+  return sessionInfo.system_info.api_feature_level >= 6;
+};
+
 export const getSettingDefinitions = (sessionInfo: SessionInfo) => {
   const SettingDefinitions = [
     {
@@ -22,7 +27,7 @@ export const getSettingDefinitions = (sessionInfo: SessionInfo) => {
     },
   ];
 
-  if (sessionInfo.system_info.api_feature_level >= 6) {
+  if (hasSeparateLogFileSupport(sessionInfo)) {
     // Older feature levels don't allow adding temp share items without a hub URL
     SettingDefinitions.push({
       key: 'separate_log_file',

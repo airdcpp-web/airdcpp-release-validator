@@ -15,7 +15,7 @@ import { API } from 'api';
 import ScanRunners from './ScanRunners';
 import { ChatCommandData, Context, SessionInfo } from './types';
 import validators from './validators';
-import { getSettingDefinitions } from 'settings';
+import { getSettingDefinitions, hasSeparateLogFileSupport } from 'settings';
 
 
 const SCAN_ACCESS = 'settings_edit';
@@ -55,7 +55,7 @@ export default function (socket: APISocket, extension: ExtensionEntryData) {
       generateResultLogName: () => `Share scan ${new Date().toLocaleString()}`,
       configGetter: () => ({
         ignoreExcluded: settings.getValue('ignore_excluded'),
-        separateLogFile: settings.getValue('separate_log_file'),
+        separateLogFile: hasSeparateLogFileSupport(sessionInfo) ? settings.getValue('separate_log_file') : false,
         validators: validators.filter(validatorEnabled),
       }),
       application: {
