@@ -24,7 +24,7 @@ All error will be reported in the event/system log.
 
 ## What's new in each version
 
-[Changelog](https://github.com/maksis/airdcpp-release-validator/blob/master/CHANGELOG.md)
+[Changelog](https://github.com/airdcpp-web/airdcpp-release-validator/blob/master/CHANGELOG.md)
 
 ## Troubleshooting
 
@@ -41,11 +41,11 @@ This extension is based on the [airdcpp-create-extension](https://github.com/air
 You may run the tests with `npm run test`.
 
 
-[build-badge]: https://img.shields.io/travis/maksis/airdcpp-release-validator/master.svg?style=flat-square
-[build]: https://travis-ci.org/maksis/airdcpp-release-validator
+[build-badge]: https://img.shields.io/travis/airdcpp-web/airdcpp-release-validator/master.svg?style=flat-square
+[build]: https://travis-ci.org/airdcpp-web/airdcpp-release-validator
 
 [npm-badge]: https://img.shields.io/npm/v/airdcpp-release-validator.svg?style=flat-square
 [npm]: https://www.npmjs.org/package/airdcpp-release-validator
 
-[coverage-badge]: https://codecov.io/gh/maksis/airdcpp-release-validator/branch/master/graph/badge.svg
-[coverage]: https://codecov.io/gh/maksis/airdcpp-release-validator
+[coverage-badge]: https://codecov.io/gh/airdcpp-web/airdcpp-release-validator/branch/master/graph/badge.svg
+[coverage]: https://codecov.io/gh/airdcpp-web/airdcpp-release-validator
