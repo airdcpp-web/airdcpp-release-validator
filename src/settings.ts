@@ -31,7 +31,7 @@ export const getSettingDefinitions = (sessionInfo: SessionInfo) => {
     // Older feature levels don't allow adding temp share items without a hub URL
     SettingDefinitions.push({
       key: 'separate_log_file',
-      title: 'Open manual scan results in a separate file',
+      title: 'Open manual scan results in a separate file/tab',
       default_value: false,
       type: 'boolean'
     });
