@@ -33,8 +33,8 @@ const validate: Validate = async (directory, reporter) => {
   // Name comparisons should be case insensitive
   // as wrong case sizing in SFV files is rather common
   // Keep the original names available for reporting
-  const files: { [key in string]: string } = {};
-  directory.files.forEach(name => files[name.toLowerCase()] = name);
+  const diskFiles: { [key in string]: string } = {};
+  directory.files.forEach(name => diskFiles[name.toLowerCase()] = name);
 
 
   // Load SFV files
@@ -56,23 +56,30 @@ const validate: Validate = async (directory, reporter) => {
 
   // Iterate through the SFV file and compare with the content
   // Matching files are removed so that we can detect extras
-  Object.keys(reader.content).forEach(file => {
-    const fileLower = file.toLowerCase();
+  Object.keys(reader.content).forEach(sfvFile => {
+    const sfvFileLower = sfvFile.toLowerCase();
 
     // Some (bad) SFV files also list NFO/SFV files... don't report them
-    if (!files[fileLower] && !isSfvOrNfo(fileLower)) {
-      reporter.addFile(file, 'file_missing', 'File listed in the SFV file does not exist on disk', ErrorType.ITEMS_MISSING);
+    if (!diskFiles[sfvFileLower] && !isSfvOrNfo(sfvFileLower)) {
+
+      // Only ignored from share?
+      if (directory.ignoredFiles.find(ignoredFile => ignoredFile.toLowerCase() === sfvFileLower)) {
+        reporter.addFile(sfvFile, 'file_ignored', 'File listed in the SFV file is ignored from share', ErrorType.INVALID_CONTENT);
+      } else {
+        reporter.addFile(sfvFile, 'file_missing', 'File listed in the SFV file does not exist on disk', ErrorType.ITEMS_MISSING);
+      }
+
     } else {
-      delete files[fileLower];
+      delete diskFiles[sfvFileLower];
     }
   });
 
   // Extra files
-  if (Object.keys(files).length > 0) {
+  if (Object.keys(diskFiles).length > 0) {
     const extrasReg = getExtrasReg(directory.name);
-    Object.values(files).forEach(file => {
-      if (!extrasReg.test(file)) {
-        reporter.addFile(file, 'extra_files', 'Extra files in release directory', ErrorType.EXTRA_ITEMS);
+    Object.values(diskFiles).forEach(diskFile => {
+      if (!extrasReg.test(diskFile)) {
+        reporter.addFile(diskFile, 'extra_files', 'Extra files in release directory', ErrorType.EXTRA_ITEMS);
       }
     });
   }

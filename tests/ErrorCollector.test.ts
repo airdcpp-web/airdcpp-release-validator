@@ -12,6 +12,8 @@ describe('Error collector', () => {
       nfoFiles: [],
       files: [],
       folders: [],
+      ignoredDirectories: [],
+      ignoredFiles: [],
     };
 
     const totalCounter = TotalErrorCounter();

@@ -19,10 +19,12 @@ export type ErrorLogger = (path: string, message: string) => void;
 export interface DirectoryInfo {
   name: string;
   path: string;
-  files: string[],
-  folders: string[],
-  sfvFiles: string[],
-  nfoFiles: string[],
+  files: string[];
+  folders: string[];
+  sfvFiles: string[];
+  nfoFiles: string[];
+  ignoredDirectories: string[];
+  ignoredFiles: string[];
 }
 
 export type ValidateCondition = (directory: DirectoryInfo) => boolean;

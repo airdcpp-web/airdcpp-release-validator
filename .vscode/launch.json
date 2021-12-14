@@ -1,73 +1,76 @@
 {
-	// Use IntelliSense to learn about possible Node.js debug attributes.
-	// Hover to view descriptions of existing attributes.
-	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-	"version": "0.2.0",
-	"configurations": [
-		{
-			"name": "Launch Program",
-			"type": "node",
-			"request": "launch",
-			"console": "integratedTerminal",
-			"program": "${workspaceRoot}\\devtools\\dev-server.js",
-			"protocol": "inspector",
-			"cwd": "${workspaceRoot}",
-			"outFiles": [ "${workspaceRoot}/dist/*.js" ],
-			"preLaunchTask": "webpack"
-		}, {
-			"name": "Launch Program with profiler",
-			"type": "node",
-			"request": "launch",
-			"console": "integratedTerminal",
-			"program": "${workspaceRoot}\\devtools\\dev-server.js",
-			"cwd": "${workspaceRoot}",
-			"outFiles": [ "${workspaceRoot}/dist/*.js" ],
-			"preLaunchTask": "webpack:prof",
-			"env": {
-				"NODE_ENV": "production",
-				"PROFILING": "1"
-			},
-			"runtimeArgs": [
-				"--prof"
-			],
-		}, {
-			"name": "Launch Program with inspector",
-			"type": "node",
-			"request": "launch",
-			"console": "integratedTerminal",
-			"program": "${workspaceRoot}\\devtools\\dev-server.js",
-			"cwd": "${workspaceRoot}",
-			"outFiles": [ "${workspaceRoot}/dist/*.js" ],
-			"preLaunchTask": "webpack:prof",
-			"env": {
-				"NODE_ENV": "production",
-				"PROFILING": "1"
-			},
-			"runtimeArgs": [
-				"--inspect"
-			],
-		}, {
-			"name": "Run Tests With Debugger",
-			"type": "node",
-			"request": "launch",
-			"port": 5858,
-			"address": "localhost",
-			"stopOnEntry": false,
-			"runtimeExecutable": null,
-			"sourceMaps": true,
-			"runtimeArgs": [
-				"--inspect-brk=5858",
-				"./node_modules/jest-cli/bin/jest.js",
-				"-i",
-				"--runInBand"
-			],
-			"cwd": "${workspaceRoot}"
-		}, {
-			"type": "node",
-			"request": "attach",
-			"name": "Attach to Process",
-			"address": "localhost",
-			"port": 5858
-		}
-	]
+  // Use IntelliSense to learn about possible Node.js debug attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch Program",
+      "type": "node",
+      "request": "launch",
+      "console": "integratedTerminal",
+      "program": "${workspaceRoot}\\devtools\\dev-server.js",
+      "protocol": "inspector",
+      "cwd": "${workspaceRoot}",
+      "outFiles": [ "${workspaceRoot}/dist/*.js" ],
+      "preLaunchTask": "webpack"
+    }, {
+      "name": "Launch Program with profiler",
+      "type": "node",
+      "request": "launch",
+      "console": "integratedTerminal",
+      "program": "${workspaceRoot}\\devtools\\dev-server.js",
+      "cwd": "${workspaceRoot}",
+      "outFiles": [ "${workspaceRoot}/dist/*.js" ],
+      "preLaunchTask": "webpack:prof",
+      "env": {
+        "NODE_ENV": "production",
+        "PROFILING": "1"
+      },
+      "runtimeArgs": [
+        "--prof"
+      ],
+    }, {
+      "name": "Launch Program with inspector",
+      "type": "node",
+      "request": "launch",
+      "console": "integratedTerminal",
+      "program": "${workspaceRoot}\\devtools\\dev-server.js",
+      "cwd": "${workspaceRoot}",
+      "outFiles": [ "${workspaceRoot}/dist/*.js" ],
+      "preLaunchTask": "webpack:prof",
+      "env": {
+        "NODE_ENV": "production",
+        "PROFILING": "1"
+      },
+      "runtimeArgs": [
+        "--inspect"
+      ],
+    }, {
+      "name": "Run Tests With Debugger",
+      "type": "node",
+      "request": "launch",
+      "port": 5858,
+      "address": "localhost",
+      "stopOnEntry": false,
+      "runtimeExecutable": null,
+      "sourceMaps": true,
+      "args": [
+        // "-t", "should report missing files that ignored from share",
+      ],
+      "runtimeArgs": [
+        "--inspect-brk=5858",
+        "./node_modules/jest-cli/bin/jest.js",
+        "-i",
+        "--runInBand"
+      ],
+      "cwd": "${workspaceRoot}"
+    }, {
+      "type": "node",
+      "request": "attach",
+      "name": "Attach to Process",
+      "address": "localhost",
+      "port": 5858
+    }
+  ]
 }

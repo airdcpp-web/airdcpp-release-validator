@@ -1,16 +1,16 @@
 import { Validator } from 'types';
-import Scanner from '../src/Scanner';
+import Scanner, { PathValidator } from '../src/Scanner';
 
 
 export const MockErrorLogger = (error: string) => {
   // console.log(error),
 };
 
-export const getTestScanner = (validators: Validator[]) => {
+export const getTestScanner = (validators: Validator[], validatePath: PathValidator = () => true) => {
   return Scanner(
     validators,
     MockErrorLogger,
-    () => true,
+    validatePath,
   )
 };
 

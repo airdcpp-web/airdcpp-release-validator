@@ -6,7 +6,7 @@ import { TotalErrorCounter, ValidatorErrorReporter } from './errors';
 import { DirectoryInfo, ErrorLogger, ErrorType, Validator } from './types';
 
 
-type PathValidator = (path: string) => Promise<boolean> | boolean;
+export type PathValidator = (path: string) => Promise<boolean> | boolean;
 
 // Scanner instance
 const Scanner = (validators: Validator[], errorLogger: ErrorLogger, validatePath: PathValidator) => {
@@ -31,6 +31,7 @@ const Scanner = (validators: Validator[], errorLogger: ErrorLogger, validatePath
     if (stat.isFile()) {
       if (!await validatePath(fullPath)) {
         ignoredFiles++;
+        directoryInfo.ignoredFiles.push(name);
         return false;
       }
 
@@ -45,6 +46,7 @@ const Scanner = (validators: Validator[], errorLogger: ErrorLogger, validatePath
     } else {
       if (!await validatePath(fullPath + path.sep)) {
         ignoredDirectories++;
+        directoryInfo.ignoredDirectories.push(name);
         return false;
       }
 
@@ -65,13 +67,15 @@ const Scanner = (validators: Validator[], errorLogger: ErrorLogger, validatePath
       return null;
     }
 
-    const info = {
+    const info: DirectoryInfo = {
       name: path.parse(directoryPath).base,
       path: directoryPath,
       files: [],
       folders: [],
       sfvFiles: [],
       nfoFiles: [],
+      ignoredDirectories: [],
+      ignoredFiles: [],
     };
 
     const contentResults = await Promise.all(contentList.map(parseFile.bind(this, info)));
