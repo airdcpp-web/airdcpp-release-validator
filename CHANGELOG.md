@@ -1,3 +1,8 @@
+### Version 1.3.0 (2021-12-14)
+
+- Add proper error reporting for files that are ignored from share
+- Drop support for Node.js 10
+
 ### Version 1.2.3 (2021-01-05)
 
 - Avoid timeouts when the system is unresponsive
