@@ -1,3 +1,7 @@
+### Version 1.3.1 (2023-03-10)
+
+- SFV reader: fix handling of multiple whitespaces after the filename
+
 ### Version 1.3.0 (2021-12-14)
 
 - Add proper error reporting for files that are ignored from share
