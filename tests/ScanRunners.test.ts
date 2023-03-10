@@ -38,15 +38,15 @@ describe('Scan runner', () => {
     const accept = jest.fn();
 
     const runner = getScanRunners(api);
-    const scanner = ((await runner.onBundleFinished(
+    const scanner = (await runner.onBundleFinished(
       bundle,
       accept,
       reject
-    )) as any) as ScannerType;
+    )) as any as ScannerType;
 
     expect(reject.mock.calls.length).toBe(1);
     expect(reject.mock.calls[0]).toMatchInlineSnapshot(`
-      Array [
+      [
         "invalid_content",
         "Extra files in release directory",
       ]
@@ -71,15 +71,15 @@ describe('Scan runner', () => {
     const runner = getScanRunners(api);
 
     const onShareDirectoryAdded = runner.getShareDirectoryAddedHandler(false);
-    const scanner = ((await onShareDirectoryAdded(
+    const scanner = (await onShareDirectoryAdded(
       hookData,
       accept,
       reject
-    )) as any) as ScannerType;
+    )) as any as ScannerType;
 
     expect(reject.mock.calls.length).toBe(1);
     expect(reject.mock.calls[0]).toMatchInlineSnapshot(`
-      Array [
+      [
         "extra_items",
         "Extra files in release directory (1 file(s): forbidden_extra.zip)",
       ]
@@ -122,11 +122,11 @@ describe('Scan runner', () => {
       },
     });
     const onShareDirectoryAdded = runner.getShareDirectoryAddedHandler(false);
-    const scanner = ((await onShareDirectoryAdded(
+    const scanner = (await onShareDirectoryAdded(
       hookData,
       accept,
       reject
-    )) as any) as ScannerType;
+    )) as any as ScannerType;
 
     expect(reject.mock.calls.length).toBe(0);
     expect(accept.mock.calls.length).toBe(1);
@@ -160,11 +160,11 @@ describe('Scan runner', () => {
       },
     });
     const onShareDirectoryAdded = runner.getShareDirectoryAddedHandler(false);
-    const scanner = ((await onShareDirectoryAdded(
+    const scanner = (await onShareDirectoryAdded(
       hookData,
       accept,
       reject
-    )) as any) as ScannerType;
+    )) as any as ScannerType;
 
     expect(reject.mock.calls.length).toBe(0);
     expect(accept.mock.calls.length).toBe(1);
@@ -285,11 +285,11 @@ describe('Scan runner', () => {
     };
 
     expect(sanitizedCall).toMatchInlineSnapshot(`
-      Object {
+      {
         "data": "/TESTS_ROOT/data/Test.Release-TEST: Extra files in release directory (1 file(s): forbidden_extra.zip)
       /TESTS_ROOT/data/Test.Release-TEST/Sample/: NFO/SFV found but there are no other files in the folder
       /TESTS_ROOT/data/Test.Release-TEST/Sample/: No valid lines were parsed from the SFV file (1 file(s): invalid.sfv)",
-        "headers": Object {
+        "headers": {
           "Authorization": "mock-token-type mock-token",
         },
         "method": "POST",

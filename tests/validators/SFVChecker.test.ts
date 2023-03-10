@@ -50,7 +50,7 @@ describe('SFV checker', () => {
     expect(scanner.errors.count('file_ignored')).toEqual(0);
   });
 
-  test('should report missing files that ignored from share', async () => {
+  test('should report missing files that are ignored from share', async () => {
     const scanPath = path.join(__dirname, 'SFVChecker-data/Valid.Content-TEST');
 
     const pathValidator: PathValidator = (path) => {

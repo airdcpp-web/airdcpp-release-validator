@@ -44,7 +44,7 @@ describe('Error collector', () => {
 
     const error = totalCounter.pickOne();
     expect(error).toMatchInlineSnapshot(`
-      Object {
+      {
         "id": "items_missing",
         "message": "File missing",
       }
@@ -68,7 +68,7 @@ describe('Error collector', () => {
 
     const error = totalCounter.pickOne();
     expect(error).toMatchInlineSnapshot(`
-      Object {
+      {
         "id": "extra_items",
         "message": "Extra file",
       }
@@ -92,7 +92,7 @@ describe('Error collector', () => {
 
     const error = totalCounter.pickOne();
     expect(error).toMatchInlineSnapshot(`
-      Object {
+      {
         "id": "invalid_content",
         "message": "File missing",
       }
