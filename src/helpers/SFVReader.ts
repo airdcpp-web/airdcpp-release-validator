@@ -9,7 +9,7 @@ const crc32Reg = /\s(\w{8})$/;
 const reduceContent = (reduced: { [key in string]: string }, line: string) => {
   const tokens = line.split(crc32Reg);
   if (tokens[0] && tokens.length > 1) {
-    let name = tokens[0];
+    let name = tokens[0].trim();
 
     // Quoted filename?
     if (name[0] === '"' && name[name.length - 1] === '"') {
