@@ -1,4 +1,4 @@
-# airdcpp-release-validator [![Travis][build-badge]][build] [![npm package][npm-badge]][npm] [![Coverage][coverage-badge]][coverage]
+# airdcpp-release-validator [![Node.js CI][build-badge]][build] [![npm package][npm-badge]][npm] [![Coverage][coverage-badge]][coverage]
 
 AirDC++ extension that performs various validations for release directories.
 
@@ -41,8 +41,8 @@ This extension is based on the [airdcpp-create-extension](https://github.com/air
 You may run the tests with `npm run test`.
 
 
-[build-badge]: https://img.shields.io/travis/airdcpp-web/airdcpp-release-validator/master.svg?style=flat-square
-[build]: https://travis-ci.org/airdcpp-web/airdcpp-release-validator
+[build-badge]: https://github.com/airdcpp-web/airdcpp-release-validator/actions/workflows/node.js.yml/badge.svg
+[build]: https://github.com/airdcpp-web/airdcpp-release-validator/actions/workflows/node.js.yml
 
 [npm-badge]: https://img.shields.io/npm/v/airdcpp-release-validator.svg?style=flat-square
 [npm]: https://www.npmjs.org/package/airdcpp-release-validator
