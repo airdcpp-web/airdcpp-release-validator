@@ -1,6 +1,6 @@
 import { APISocket } from 'airdcpp-apisocket';
 
-import { SeverityEnum, GroupedPath, ShareRoot, PostTempShareResponse } from './types/api';
+import { SeverityEnum, GroupedPath, ShareRoot, PostTempShareResponse, FilelistItem } from './types/api';
 
 
 export const API = (socket: APISocket) => {
@@ -51,12 +51,20 @@ export const API = (socket: APISocket) => {
       text: true,
     });
   };
+  
+  const getFilelistItem = async (filelistItemId: number, entityId: string) => {
+    return socket.get<FilelistItem>(
+      `filelists/${entityId}/items/${filelistItemId}`
+    );
+  };
+
 
   return {
     getShareRoot,
     postEvent,
     getGroupedShareRoots,
     validateSharePath,
+    getFilelistItem,
 
     postTempShare,
     deleteTempShare,

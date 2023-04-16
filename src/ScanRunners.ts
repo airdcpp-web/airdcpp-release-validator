@@ -6,6 +6,10 @@ import { getApiErrorLogger, getMemoryErrorLogger } from 'errors/ErrorLogger';
 import { openLog } from 'helpers/LogViewer';
 
 
+const getEmptyScanner = () => {
+  return Scanner([], getMemoryErrorLogger(true).logger, () => false)
+}
+
 // Scan initiators
 const ScanRunners = function (context: Context) {
   const { api, logger, configGetter } = context;
@@ -178,6 +182,32 @@ const ScanRunners = function (context: Context) {
     return await scanPathsManual(paths);
   };
 
+  const scanOwnFilelistDirectories = async (ids: number[], entityId: string) => {
+    const paths = [];
+    for (const id of ids) {
+      try {
+        const filelistItem = await api.getFilelistItem(id, entityId);
+        if (filelistItem.type.id !== 'directory' || !filelistItem.dupe) {
+          continue;
+        }
+
+        if (filelistItem.path === '/') {
+          return scanShare();
+        }
+
+        paths.push(...filelistItem.dupe.paths);
+      } catch (e) {
+        logger.info(`Failed to fetch filelist item: ${e} (id ${id})`);
+      }
+    }
+
+    if (!paths.length) {
+      return getEmptyScanner();
+    }
+
+    return scanPathsManual(paths);
+  };
+
   const stop = () => {
     // TODO
   };
@@ -186,6 +216,7 @@ const ScanRunners = function (context: Context) {
     // Manual scans
     scanShare,
     scanShareRoots,
+    scanOwnFilelistDirectories,
 
     // Hooks
     onBundleFinished,

@@ -155,6 +155,29 @@ export default function (socket: APISocket, extension: ExtensionEntryData) {
       subscriberInfo,
     );
     
+    // Older versions don't add dupe information for files/directories in own filelist
+    if (sessionInfo.system_info.api_feature_level >= 8) {
+      addContextMenuItems<number, string>(
+        socket,
+        [
+          {
+            id: 'scan_missing_extra',
+            title: `Scan for missing/extra files`,
+            icon: {
+              semantic: 'yellow broom'
+            },
+            filter: (itemIds, entityId, permissions, supports) => {
+              return entityId === context.application.cid
+            },
+            access: SCAN_ACCESS,
+            onClick: runners.scanOwnFilelistDirectories,
+          }
+        ],
+        'filelist_item',
+        subscriberInfo,
+      );
+    }
+
     addContextMenuItems(
       socket,
       [

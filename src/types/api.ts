@@ -43,6 +43,28 @@ export interface ShareRoot {
   path: string;
 }
 
+export interface DirectoryType {
+  id: 'directory';
+}
+
+export interface FileType {
+  id: 'file';
+}
+
+export type FileItemType = FileType | DirectoryType;
+
+export interface Dupe {
+  id: string;
+  paths: string[];
+}
+
+export interface FilelistItem {
+  id: number;
+  path: string;
+  type: FileItemType;
+  dupe: Dupe | null;
+}
+
 export interface GroupedPath {
   paths: string[];
 }

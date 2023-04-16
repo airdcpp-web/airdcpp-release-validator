@@ -11,6 +11,7 @@ import {
 import { ScannerType } from 'Scanner';
 import { APIType } from 'api';
 import { sanitizeResultPaths } from './helpers';
+import { FilelistItem } from 'types';
 
 describe('Scan runner', () => {
   const getScanRunners = (
@@ -213,6 +214,36 @@ describe('Scan runner', () => {
     const scanner = await runner.scanShare();
 
     expect(scanner.errors.count() > 0).toBe(true);
+  });
+
+  test('should scan filelist directories', async () => {
+    const scanPath = path.join(__dirname, 'data/Test.Release-TEST');
+
+    const filelistItemInfo: FilelistItem = {
+      id: 1,
+      path: '/Share/Test.Release-TEST/',
+      type: {
+        id: 'directory',
+      },
+      dupe: {
+        id: 'share full',
+        paths: [
+          scanPath,
+        ]
+      }
+    };
+
+    const api = getMockApi({
+      getFilelistItem: () => {
+        return Promise.resolve(filelistItemInfo);
+      },
+    });
+
+    const runner = getScanRunners(api);
+    const scanner = await runner.scanOwnFilelistDirectories([1], 'CWXQGJYK3QERDRGB25M4ABJMGF2F4ODDDOON25A');
+
+    expect(scanner.errors.count() > 0).toBe(true);
+    expect(scanner.stats.scannedDirectories).toBe(2);
   });
 
   test('should handle separate log files', async () => {
