@@ -3,6 +3,7 @@ export interface ChatCommandData {
   command: string;
   args: string[];
   permissions: string[];
+  owner?: string;
 }
 
 

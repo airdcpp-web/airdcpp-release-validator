@@ -79,20 +79,27 @@ export default function (socket: APISocket, extension: ExtensionEntryData) {
   
       switch (command) {
         case 'help': {
-          return `
+          return {
+            severity: 'info',
+            type: 'private',
+            text: `
 
   Release validator commands
 
   /rvalidator scan - Scan the entire share for invalid content
-
-          `;
+`
+          };
         }
         case 'rvalidator': {
           if (!!args.length) {
             switch (args[0]) {
               case 'scan': {
                 runners.scanShare();
-                break;
+                return {
+                  severity: 'info',
+                  type: 'system',
+                  text: 'Scan started, see the event log for details'
+                };
               }
             }
           }
@@ -103,11 +110,11 @@ export default function (socket: APISocket, extension: ExtensionEntryData) {
     };
   
     const onChatCommand = (type: 'hub' | 'private_chat', data: ChatCommandData, entityId: string | number) => {
-      const statusMessage = checkChatCommand(data);
-      if (statusMessage) {
+      const statusMessageData = checkChatCommand(data);
+      if (statusMessageData) {
         socket.post(`${type}/${entityId}/status_message`, {
-          text: statusMessage,
-          severity: 'info',
+          ...statusMessageData,
+          owner: data.owner,
         });
       }
     };
