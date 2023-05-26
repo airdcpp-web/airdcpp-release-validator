@@ -12,6 +12,7 @@ import { ScannerType } from 'Scanner';
 import { APIType } from 'api';
 import { sanitizeResultPaths } from './helpers';
 import { FilelistItem } from 'types';
+import { Headers } from 'node-fetch';
 
 describe('Scan runner', () => {
   const getScanRunners = (
