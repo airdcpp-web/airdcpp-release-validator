@@ -1,3 +1,9 @@
+## Version 1.4.0 (2023-05-26)
+
+- Allow scanning directories in own filelist (minimum required application version is AirDC++ Web Client 2.12 or AirDC++ 4.21b)
+- Responses to chat commands will be sent only to UI instance that initiated the command (minimum required application version is AirDC++ Web Client 2.12 or AirDC++ 4.21b)
+- Fix error "Failed to open scan results: getaddrinfo ENOTFOUND [::1]" on Linux when the option "Open manual scan results in a separate file/tab" is enabled
+
 ### Version 1.3.1 (2023-03-10)
 
 - SFV reader: fix handling of multiple whitespaces after the filename
