@@ -18,7 +18,7 @@ export const getMockApi = (customHandlers: Partial<APIType> = {}): APIType => {
 
 export interface MockContextOptions {
   configOverrides?: Partial<Config>;
-  axios?: (data: object) => Promise<any>;
+  fetch?: (url: string, options: object) => Promise<any>;
 }
 
 export const MOCK_RESULT_LOG_NAME = 'mock_log_name';
@@ -38,7 +38,7 @@ export const MockApplicationInfo: ApplicationInfo = {
 export const getMockContext = (api: APIType, options: Partial<MockContextOptions> = {}) => {
   const context: Context = {
     api,
-    axios: options.axios || (() => {}) as any,
+    fetch: options.fetch || (() => {}) as any,
     logger, 
     extensionName: 'test-extension',
     configGetter: () => ({

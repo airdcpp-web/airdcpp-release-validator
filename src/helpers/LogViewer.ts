@@ -1,15 +1,14 @@
 import { Context } from 'types';
 
 
-const postData = (path: string, data: string, { application, axios }: Context) => {
+const postData = (path: string, body: string, { application, fetch }: Context) => {
   const baseUrl = (application.server.secure ? 'https://' : 'http://') + application.server.address;
-  return axios({
-    url: `${baseUrl}/${path}`,
+  return fetch(`${baseUrl}/${path}`, {
     method: 'POST',
     headers: {
       'Authorization': `${application.session.tokenType} ${application.session.token}`,
     },
-    data,
+    body,
   })
 };
 
@@ -17,7 +16,7 @@ export const openLog = async (text: string, context: Context) => {
   // Upload text
   const { api, generateResultLogName } = context;
   const fileUploadRes = await postData('temp', text, context);
-  const tempFileId = fileUploadRes.headers['location'];
+  const tempFileId = fileUploadRes.headers.get('location')!;
 
   // Create a temp share item so that we get a TTH to view
   const tempShareRes = await api.postTempShare(tempFileId, generateResultLogName(), context.application.cid);

@@ -2,8 +2,7 @@
 
 const CONFIG_VERSION = 1;
 
-
-import axios from 'axios';
+import fetch from 'node-fetch';
 
 import { addContextMenuItems, APISocket } from 'airdcpp-apisocket';
 import { ExtensionEntryData } from 'airdcpp-extension';
@@ -49,7 +48,7 @@ export default function (socket: APISocket, extension: ExtensionEntryData) {
     const api = API(socket);
     const context: Context = {
       api,
-      axios,
+      fetch,
       logger: socket.logger,
       extensionName: extension.name,
       generateResultLogName: () => `Share scan ${new Date().toLocaleString()}`,

@@ -2,7 +2,8 @@ import { ServerInfo } from 'airdcpp-extension';
 import { Validator } from './internal';
 import { APIType } from 'api';
 import { Logger } from 'airdcpp-apisocket';
-import { AxiosInstance } from 'axios';
+
+import fetch from 'node-fetch';
 
 
 // CONTEXT
@@ -28,6 +29,6 @@ export interface Context {
   application: ApplicationInfo;
   api: APIType;
   logger: Logger;
-  axios: AxiosInstance;
+  fetch: typeof fetch;
   generateResultLogName: () => string;
 }

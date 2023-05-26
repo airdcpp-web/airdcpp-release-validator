@@ -227,10 +227,8 @@ describe('Scan runner', () => {
       },
       dupe: {
         id: 'share full',
-        paths: [
-          scanPath,
-        ]
-      }
+        paths: [scanPath],
+      },
     };
 
     const api = getMockApi({
@@ -240,7 +238,10 @@ describe('Scan runner', () => {
     });
 
     const runner = getScanRunners(api);
-    const scanner = await runner.scanOwnFilelistDirectories([1], 'CWXQGJYK3QERDRGB25M4ABJMGF2F4ODDDOON25A');
+    const scanner = await runner.scanOwnFilelistDirectories(
+      [1],
+      'CWXQGJYK3QERDRGB25M4ABJMGF2F4ODDDOON25A'
+    );
 
     expect(scanner.errors.count() > 0).toBe(true);
     expect(scanner.stats.scannedDirectories).toBe(2);
@@ -287,12 +288,15 @@ describe('Scan runner', () => {
     });
 
     const runner = getScanRunners(api as APIType, {
-      axios: (data) => {
-        uploadContentFn(data);
+      fetch: (url, options) => {
+        uploadContentFn(url, options);
+
+        const headers = new Headers({
+          location: MOCK_UPLOAD_LOCATION_ID,
+        });
+
         return Promise.resolve({
-          headers: {
-            location: MOCK_UPLOAD_LOCATION_ID,
-          },
+          headers,
         });
       },
       configOverrides: {
@@ -309,22 +313,26 @@ describe('Scan runner', () => {
     expect(deleteTempShareFn).toHaveBeenCalledWith(MOCK_VIEW_FILE_ID);
     expect(createViewFileFn).toHaveBeenCalledWith(MOCK_TTH);
 
-    const axiosCall = uploadContentFn.mock.calls[0][0];
-    const sanitizedCall = {
-      ...axiosCall,
-      data: sanitizeResultPaths(axiosCall.data),
+    const fetchCall = uploadContentFn.mock.calls[0];
+
+    const callUrl = fetchCall[0];
+    const callOptions = fetchCall[1];
+
+    const sanitizedCallOptions = {
+      ...callOptions,
+      body: sanitizeResultPaths(callOptions.body), // Remove absolute paths
     };
 
-    expect(sanitizedCall).toMatchInlineSnapshot(`
+    expect(callUrl).toMatchInlineSnapshot(`"http://mock_url/temp"`);
+    expect(sanitizedCallOptions).toMatchInlineSnapshot(`
       {
-        "data": "/TESTS_ROOT/data/Test.Release-TEST: Extra files in release directory (1 file(s): forbidden_extra.zip)
+        "body": "/TESTS_ROOT/data/Test.Release-TEST: Extra files in release directory (1 file(s): forbidden_extra.zip)
       /TESTS_ROOT/data/Test.Release-TEST/Sample/: NFO/SFV found but there are no other files in the folder
       /TESTS_ROOT/data/Test.Release-TEST/Sample/: No valid lines were parsed from the SFV file (1 file(s): invalid.sfv)",
         "headers": {
           "Authorization": "mock-token-type mock-token",
         },
         "method": "POST",
-        "url": "http://mock_url/temp",
       }
     `);
   });
