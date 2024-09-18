@@ -10,7 +10,6 @@
       "request": "launch",
       "console": "integratedTerminal",
       "program": "${workspaceRoot}\\devtools\\dev-server.mjs",
-      "protocol": "inspector",
       "cwd": "${workspaceRoot}",
       "outFiles": [ "${workspaceRoot}/dist/*.js" ],
       "preLaunchTask": "webpack"
@@ -50,8 +49,6 @@
       "name": "Run Tests With Debugger",
       "type": "node",
       "request": "launch",
-      "port": 5858,
-      "address": "localhost",
       "stopOnEntry": false,
       "runtimeExecutable": null,
       "sourceMaps": true,
@@ -60,9 +57,8 @@
       ],
       "runtimeArgs": [
         "--inspect-brk=5858",
-        "./node_modules/jest-cli/bin/jest.js",
-        "-i",
-        "--runInBand"
+        "./node_modules/jest/bin/jest",
+        "-i"
       ],
       "cwd": "${workspaceRoot}"
     }, {
