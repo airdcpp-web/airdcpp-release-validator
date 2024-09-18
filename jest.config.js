@@ -1,13 +1,18 @@
 // Sync object
 const config = {
   transform: {
-    '^.+\\.ts$': 'ts-jest'
+    '^.+\\.ts$': 'ts-jest',
+    // "node_modules/node-fetch/.+\\.(j|t)sx?$": "ts-jest"
   },
+  moduleDirectories: ['src', 'node_modules'],
   testEnvironment: 'node',
   moduleFileExtensions: [
     'js',
     'ts',
     'json'
+  ],
+  transformIgnorePatterns: [
+    '<rootDir>\/node_modules\/(?!node\\-fetch)\/'
   ],
   moduleNameMapper: {
     '(src/.*)$': '<rootDir>/$1'

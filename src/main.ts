@@ -137,7 +137,7 @@ export default function (socket: APISocket, extension: ExtensionEntryData) {
     await socket.addListener('hubs', 'hub_text_command', onChatCommand.bind(null, 'hubs'));
     await socket.addListener('private_chat', 'private_chat_text_command', onChatCommand.bind(null, 'private_chat'));
 
-    addContextMenuItems(
+    addContextMenuItems<string>(
       socket,
       [
         {
@@ -147,7 +147,7 @@ export default function (socket: APISocket, extension: ExtensionEntryData) {
             semantic: 'yellow broom'
           },
           access: SCAN_ACCESS,
-          onClick: runners.scanShareRoots,
+          onClick: ({ selectedIds }) => runners.scanShareRoots(selectedIds),
         }
       ],
       'share_root',
@@ -165,11 +165,11 @@ export default function (socket: APISocket, extension: ExtensionEntryData) {
             icon: {
               semantic: 'yellow broom'
             },
-            filter: (itemIds, entityId, permissions, supports) => {
+            filter: ({ entityId }) => {
               return entityId === context.application.cid
             },
             access: SCAN_ACCESS,
-            onClick: runners.scanOwnFilelistDirectories,
+            onClick: ({ selectedIds, entityId }) => runners.scanOwnFilelistDirectories(selectedIds, entityId),
           }
         ],
         'filelist_item',
@@ -190,7 +190,7 @@ export default function (socket: APISocket, extension: ExtensionEntryData) {
           onClick: async () => {
             await runners.scanShare();
           },
-          filter: ids => ids.indexOf(extension.name) !== -1
+          filter: ({ selectedIds }) => selectedIds.indexOf(extension.name) !== -1
         }
       ],
       'extension',

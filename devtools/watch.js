@@ -32,7 +32,7 @@ webpack(webpackConfig).watch(1000, function(err, stats) {
 	if (!started) {
 		started = true;
 
-		const serverPath = path.resolve(__dirname, 'dev-server.js');
+		const serverPath = path.resolve(__dirname, 'dev-server.mjs');
 		nodemon({
 			execMap: {
 				js: 'node --inspect'

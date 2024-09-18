@@ -1,9 +1,10 @@
 import { ServerInfo } from 'airdcpp-extension';
-import { Validator } from './internal';
-import { APIType } from 'api';
 import { Logger } from 'airdcpp-apisocket';
 
 import fetch from 'node-fetch';
+
+import { Validator } from './internal.js';
+import { APIType } from 'api.js';
 
 
 // CONTEXT

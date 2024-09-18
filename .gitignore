@@ -3,7 +3,7 @@ coverage
 .DS_Store
 .idea
 /dist
-/devtools/settings.js
+/devtools/settings.mjs
 /devtools/settings
 /devtools/logs
 /*.log

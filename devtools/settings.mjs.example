@@ -1,4 +1,4 @@
-module.exports = {
+export default {
 	// API settings
 	url: 'ws://localhost:5600/api/v1/',
 	username: 'myusername',
