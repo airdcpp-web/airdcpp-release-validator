@@ -1,15 +1,28 @@
 import { Context } from 'types';
 
 
-const postData = (path: string, body: string, { application, fetch }: Context) => {
+const postData = async (path: string, body: string, { application, fetch, logger }: Context) => {
   const baseUrl = (application.server.secure ? 'https://' : 'http://') + application.server.address;
-  return fetch(`${baseUrl}/${path}`, {
+  
+  const url = `${baseUrl}/${path}`;
+
+  logger.verbose(`POST data to ${url}`);
+  const response = await fetch(url, {
     method: 'POST',
     headers: {
       'Authorization': `${application.session.tokenType} ${application.session.token}`,
     },
     body,
-  })
+  });
+
+  if (response.status >= 400) {
+    logger.error(`POST response error: ${response.status} ${response.statusText}`, await response.text());
+    throw new Error(`Failed to post data to ${url}: ${response.status} ${response.statusText}`);
+  } else {
+    logger.verbose(`POST succeeded`);
+  }
+
+  return response;
 };
 
 export const openLog = async (text: string, context: Context) => {
