@@ -25,7 +25,7 @@ const toErrorMessage = (error: ErrorInfo) => {
   } else {
     // List the first 20 files (there can hundreds of them)
     messageStr += error.files.slice(0, 20).reduce(reduceFilesMessage, '');
-    messageStr += `and ${error.files.length - 20} more`;
+    messageStr += ` and ${error.files.length - 20} more`;
   }
 
   messageStr += ')';
