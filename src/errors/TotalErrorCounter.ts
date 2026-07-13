@@ -16,7 +16,7 @@ export const TotalErrorCounter = () => {
 
     // Decapitalize
     if (message.charAt(1) === message.charAt(1).toLowerCase()) {
-      message = message.charAt(0).toLowerCase() + message.substr(1);
+      message = message.charAt(0).toLowerCase() + message.slice(1);
     }
 
     return `${message} (count: ${error.count})`
@@ -27,7 +27,7 @@ export const TotalErrorCounter = () => {
   };
 
   const format = () => {
-    return Object.keys(errors).reduce(reduceMessage, '');
+    return Object.keys(errors).reduce((accumulator, element, index) => reduceMessage(accumulator, element, index), '');
   };
 
 

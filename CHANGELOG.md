@@ -1,3 +1,9 @@
+## Version 1.4.1 (2026-xx-xx)
+
+- Improve error reporting when the scan results can't be opened in a separate tab ([#43](https://github.com/airdcpp-web/airdcpp-release-validator/issues/43))
+- Fix a missing whitespace in the error report message
+- Update all dependencies
+
 ## Version 1.4.0 (2023-05-26)
 
 - Allow scanning directories in own filelist (minimum required application version is AirDC++ Web Client 2.12 or AirDC++ 4.21b)

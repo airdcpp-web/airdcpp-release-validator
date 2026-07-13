@@ -1,4 +1,4 @@
-import validators from 'validators';
+import validators from '../src/validators';
 import { Context, Config, ApplicationInfo } from 'types';
 
 import { MockLogger as logger } from './helpers';

@@ -1,6 +1,6 @@
 import ScanRunners from 'ScanRunners';
 
-import path from 'path';
+import path from 'node:path';
 
 import {
   getMockContext,
@@ -45,14 +45,14 @@ describe('Scan runner', () => {
       reject
     )) as any as ScannerType;
 
-    expect(reject.mock.calls.length).toBe(1);
+    expect(reject.mock.calls).toHaveLength(1);
     expect(reject.mock.calls[0]).toMatchInlineSnapshot(`
       [
         "invalid_content",
         "Extra files in release directory",
       ]
     `);
-    expect(accept.mock.calls.length).toBe(0);
+    expect(accept.mock.calls).toHaveLength(0);
     expect(scanner.stats.scannedDirectories).toBe(2);
   });
 
@@ -78,7 +78,7 @@ describe('Scan runner', () => {
       reject
     )) as any as ScannerType;
 
-    expect(reject.mock.calls.length).toBe(1);
+    expect(reject.mock.calls).toHaveLength(1);
     expect(reject.mock.calls[0]).toMatchInlineSnapshot(`
       [
         "extra_items",
@@ -86,7 +86,7 @@ describe('Scan runner', () => {
       ]
     `);
 
-    expect(accept.mock.calls.length).toBe(0);
+    expect(accept.mock.calls).toHaveLength(0);
     expect(scanner.stats.scannedDirectories).toBe(1); // Not recursive
   });
 
@@ -102,7 +102,7 @@ describe('Scan runner', () => {
           validatedPath.endsWith('forbidden_extra.zip')
         ) {
           ignoredPathFn(path, skipCheckQueue);
-          return Promise.reject('Ignored');
+          return Promise.reject(new Error('Ignored'));
         }
 
         return Promise.resolve();
@@ -129,9 +129,9 @@ describe('Scan runner', () => {
       reject
     )) as any as ScannerType;
 
-    expect(reject.mock.calls.length).toBe(0);
-    expect(accept.mock.calls.length).toBe(1);
-    expect(ignoredPathFn.mock.calls.length).toBe(2);
+    expect(reject.mock.calls).toHaveLength(0);
+    expect(accept.mock.calls).toHaveLength(1);
+    expect(ignoredPathFn.mock.calls).toHaveLength(2);
     expect(scanner.stats.scannedDirectories).toBe(1);
   });
 
@@ -143,7 +143,7 @@ describe('Scan runner', () => {
     const api = getMockApi({
       validateSharePath: (validatedPath, skipCheckQueue) => {
         ignoredPathFn(validatedPath, skipCheckQueue);
-        return Promise.reject('Ignored');
+        return Promise.reject(new Error('Ignored'));
       },
     });
 
@@ -167,9 +167,9 @@ describe('Scan runner', () => {
       reject
     )) as any as ScannerType;
 
-    expect(reject.mock.calls.length).toBe(0);
-    expect(accept.mock.calls.length).toBe(1);
-    expect(ignoredPathFn.mock.calls.length).toBe(6);
+    expect(reject.mock.calls).toHaveLength(0);
+    expect(accept.mock.calls).toHaveLength(1);
+    expect(ignoredPathFn.mock.calls).toHaveLength(6);
     expect(scanner.stats.scannedDirectories).toBe(0);
   });
 
@@ -287,7 +287,7 @@ describe('Scan runner', () => {
       },
     });
 
-    const runner = getScanRunners(api as APIType, {
+    const runner = getScanRunners(api, {
       fetch: (url, options) => {
         uploadContentFn(url, options);
 
@@ -351,7 +351,7 @@ describe('Scan runner', () => {
       },
     });
 
-    const runner = getScanRunners(api as APIType);
+    const runner = getScanRunners(api);
     const scanner = await runner.scanShare();
 
     expect(scanner.errors.count() > 0).toBe(true);

@@ -20,7 +20,7 @@ import { getSettingDefinitions, hasSeparateLogFileSupport } from 'settings';
 const SCAN_ACCESS = 'settings_edit';
 
 const hasScanAccess = (permissions: string[]) => {
-  return permissions.indexOf('admin') !== -1 || permissions.indexOf(SCAN_ACCESS) !== -1;
+  return permissions.includes('admin') || permissions.includes(SCAN_ACCESS);
 };
 
 export default function (socket: APISocket, extension: ExtensionEntryData) {
@@ -190,7 +190,7 @@ export default function (socket: APISocket, extension: ExtensionEntryData) {
           onClick: async () => {
             await runners.scanShare();
           },
-          filter: ({ selectedIds }) => selectedIds.indexOf(extension.name) !== -1
+          filter: ({ selectedIds }) => selectedIds.includes(extension.name)
         }
       ],
       'extension',

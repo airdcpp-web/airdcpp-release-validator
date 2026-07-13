@@ -22,7 +22,7 @@ export const getSettingDefinitions = (sessionInfo: SessionInfo) => {
       title: 'Ignore files/directories that are excluded from share',
       // Enable by default on Windows to avoid issue for migrating users because of hidden files/other ignores
       // Non-windows may also run the application on slower devices, that would increase the scan time even more
-      default_value: sessionInfo.system_info.platform === PlatformEnum.WINDOWS ? true : false,
+      default_value: sessionInfo.system_info.platform === PlatformEnum.WINDOWS,
       type: 'boolean'
     },
   ];

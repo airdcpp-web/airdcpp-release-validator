@@ -1,6 +1,7 @@
 import MissingNfo from 'validators/MissingNfo';
-import path from 'path';
 import { getTestScanner } from '../helpers';
+
+import path from 'node:path';
 
 
 describe('Missing NFO validator', () => {

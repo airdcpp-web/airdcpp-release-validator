@@ -1,6 +1,7 @@
 import MissingSfv from 'validators/MissingSfv';
-import path from 'path';
 import { getTestScanner } from '../helpers';
+
+import path from 'node:path';
 
 
 describe('Extra SFV validator', () => {

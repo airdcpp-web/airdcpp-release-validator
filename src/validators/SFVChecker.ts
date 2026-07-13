@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 import SFVReader from '../helpers/SFVReader';
 import { ErrorType, Validate, ValidateCondition } from '../types';
  
@@ -63,7 +63,7 @@ const validate: Validate = async (directory, reporter) => {
     if (!diskFiles[sfvFileLower] && !isSfvOrNfo(sfvFileLower)) {
 
       // Only ignored from share?
-      if (directory.ignoredFiles.find(ignoredFile => ignoredFile.toLowerCase() === sfvFileLower)) {
+      if (directory.ignoredFiles.some(ignoredFile => ignoredFile.toLowerCase() === sfvFileLower)) {
         reporter.addFile(sfvFile, 'file_ignored', 'File listed in the SFV file is ignored from share', ErrorType.INVALID_CONTENT);
       } else {
         reporter.addFile(sfvFile, 'file_missing', 'File listed in the SFV file does not exist on disk', ErrorType.ITEMS_MISSING);

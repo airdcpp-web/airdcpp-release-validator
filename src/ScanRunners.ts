@@ -99,11 +99,10 @@ const ScanRunners = function (context: Context) {
 
   // Scan entire share
   const scanShare = async () => {
-    // const groupedDirectories = await socket.get<GroupedPath[]>('share/grouped_root_paths');
     const groupedDirectories = await api.getGroupedShareRoots();
     api.postEvent('Scanning shared releases...', SeverityEnum.INFO);
 
-    const scanner = await doManualScan(groupedDirectories.reduce(reduceGroupedPath, []));
+    const scanner = await doManualScan(groupedDirectories.reduce((accumulator, element) => reduceGroupedPath(accumulator, element), []));
     return scanner;
   };
 

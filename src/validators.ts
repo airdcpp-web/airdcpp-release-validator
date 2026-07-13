@@ -1,11 +1,16 @@
 
 // List of available validators
 
+import SFVChecker from './validators/SFVChecker';
+import MissingSfv from './validators/MissingSfv';
+import MissingNfo from './validators/MissingNfo';
+import ExtraNfoSfv from './validators/ExtraNfoSfv';
+
 const Validators = [
-  require('./validators/SFVChecker').default,
-  require('./validators/MissingSfv').default,
-  require('./validators/MissingNfo').default,
-  require('./validators/ExtraNfoSfv').default,
+  SFVChecker,
+  MissingSfv,
+  MissingNfo,
+  ExtraNfoSfv,
 ];
 
 export default Validators;

@@ -1,5 +1,5 @@
 import fs from 'async-file';
-import path from 'path';
+import path from 'node:path';
 import { DirectoryInfo, ErrorType, Validate, ValidateCondition } from '../types';
 
 import { isReleaseName } from './common';
@@ -29,7 +29,7 @@ const findNfo = (directory: DirectoryInfo): boolean => {
 
   return !!directory.folders
     .filter(isSubdir)
-    .find(scanSubdirectory.bind(this, directory.path));
+    .some(scanSubdirectory.bind(this, directory.path));
 };
  
 const validate: Validate = async (directory, reporter) => {

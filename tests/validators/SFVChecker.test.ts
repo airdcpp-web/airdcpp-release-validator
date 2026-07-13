@@ -1,7 +1,8 @@
 import SFVChecker from 'validators/SFVChecker';
-import path from 'path';
 import { getTestScanner } from '../helpers';
 import { PathValidator } from 'Scanner';
+
+import path from 'node:path';
 
 
 describe('SFV checker', () => {

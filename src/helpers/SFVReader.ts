@@ -1,7 +1,7 @@
 import fs from 'async-file';
 import eol from 'eol';
 
-import path from 'path';
+import path from 'node:path';
 
 const crc32Reg = /\s(\w{8})$/;
 
@@ -12,7 +12,7 @@ const reduceContent = (reduced: { [key in string]: string }, line: string) => {
     let name = tokens[0].trim();
 
     // Quoted filename?
-    if (name[0] === '"' && name[name.length - 1] === '"') {
+    if (name.startsWith('"') && name.endsWith('"')) {
       name = name.substring(1, name.length - 1);
     }
     
@@ -24,7 +24,7 @@ const reduceContent = (reduced: { [key in string]: string }, line: string) => {
 
 // Remove lines that have been commented out or contain subdirectories
 const filterLines = (line: string) => {
-  return line && line.indexOf(';') === -1 && line.indexOf('\\') === -1;
+  return line && !line.includes(';') && !line.includes('\\');
 };
 
 const SFVReader = (directoryPath: string) => {
@@ -42,7 +42,7 @@ const SFVReader = (directoryPath: string) => {
     const file = await fs.readFile(filePath, 'utf8');
     const loaded = eol.split(file)
       .filter(filterLines)
-      .reduce(reduceContent, {});
+      .reduce((accumulator, element) => reduceContent(accumulator, element), {});
 
     if (!Object.keys(loaded).length) {
       throw new Error(`No valid lines were parsed from the SFV file`);

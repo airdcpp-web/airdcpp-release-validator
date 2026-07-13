@@ -1,5 +1,5 @@
 import SFVReader from 'helpers/SFVReader';
-import path from 'path';
+import path from 'node:path';
 
 
 describe('SFV reader', () => {

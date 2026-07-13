@@ -21,10 +21,10 @@ const toErrorMessage = (error: ErrorInfo) => {
   let messageStr = `${error.message} (${error.files.length} file(s): `;
   if (error.files.length < 25) {
     // List all files
-    messageStr += error.files.reduce(reduceFilesMessage, '');
+    messageStr += error.files.reduce((accumulator, element, index) => reduceFilesMessage(accumulator, element, index), '');
   } else {
     // List the first 20 files (there can hundreds of them)
-    messageStr += error.files.slice(0, 20).reduce(reduceFilesMessage, '');
+    messageStr += error.files.slice(0, 20).reduce((accumulator, element, index) => reduceFilesMessage(accumulator, element, index), '');
     messageStr += ` and ${error.files.length - 20} more`;
   }
 
